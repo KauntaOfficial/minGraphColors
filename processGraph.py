@@ -1,7 +1,7 @@
 # Benjamin Chappell
 
-fileToProcess = "DSJC250.1.gr"
-fileToReturn = "dsjc2501.txt"
+fileToProcess = "DSJC125.1.gr"
+fileToReturn = "dsjc1251.txt"
 
 def main(f, w):
     pFile = open(f, "r")
@@ -9,10 +9,8 @@ def main(f, w):
     vertexCount = int(adjList.pop(0))
 
     wFile = open(w, "w")
-
     for i in range(0, len(adjList)):
         adjList[i] = adjList[i].split()
-        
         for j in range(0, len(adjList[i])):
             adjList[i][j] = int(adjList[i][j])
 
