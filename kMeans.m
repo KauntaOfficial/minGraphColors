@@ -29,7 +29,7 @@ X = load('dsjc2501.txt');
 vertexCount = size(X, 1);
 
 % Select an initial set of centroids
-K = vertexCount / 2 % Arbitrary starting centroid count
+K = vertexCount / 2; % Arbitrary starting centroid count
 maxIters = 15; % Arbitrary amount of iterations.
 initialCentroids = kMeansInitCentroids(X, K);
 
@@ -38,10 +38,12 @@ idx = findClosestCentroids(X, initialCentroids);
 
 % Run K-Means Algorithm. The false at the end tells the function not to plot the progress.
 [centroids, idx] = runkMeans(X, initialCentroids, maxIters, false);
+fprintf("%i\n", idx)
+
 
 % Open the output file for writing.
-output = 'currentResults.txt';
+%output = 'currentResults.txt';
 %outputFile = fopen(output, 'w');
 
-fprintf("%i\n", idx));
+%fprintf(output, "%i\n", idx);
 %fclose(output);
