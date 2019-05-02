@@ -39,3 +39,9 @@ idx = findClosestCentroids(X, initialCentroids);
 % Run K-Means Algorithm. The false at the end tells the function not to plot the progress.
 [centroids, idx] = runkMeans(X, initialCentroids, maxIters, false);
 
+% Open the output file for writing.
+output = 'currentResults.txt';
+%outputFile = fopen(output, 'w');
+
+fprintf("%i\n", idx));
+%fclose(output);
