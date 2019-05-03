@@ -12,9 +12,9 @@ public class minGraph
     
     public static boolean colorTest(int[] colors, Graph g)
     {
-        for(int u = 0; u < g.getVertexCount(); u++)
-            for(int v = 0; v < g.getVertexCount(); v++)
-                if(u != v && g.areAdjacent(u, v) && colors[u] == colors[v])
+        for(int u = 0; u < g.adjacencyList.length; u++)
+            for(int v = 0; v < g.adjacencyList[u].length; v++)
+                if(colors[u] == colors[g.adjacencyList[u][v]] && u != v)
                 {
                     return false;
                 }
@@ -38,7 +38,7 @@ public class minGraph
         
         for (int colorChoices = vertexCount - 1; colorChoices > 0; colorChoices--)
         {
-            for (int attempt = 0; attempt <= 100000; attempt++)
+            for (int attempt = 0; attempt <= 1000; attempt++)
             {
                 for (int node = 0; node < vertexColors.length; node++)
                 {
@@ -47,8 +47,8 @@ public class minGraph
                 
                 if (colorTest(vertexColors, inputGraph))
                 {
-                    minColorChoices = colorChoices;
-                    minColors = vertexColors;
+                    minColorChoices = colorChoices + 1;
+                    System.arraycopy(vertexColors, 0, minColors, 0, vertexColors.length);
                 }
             }
         }
