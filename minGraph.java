@@ -6,7 +6,8 @@ public class minGraph
 {
     public static int randomInt(int min, int max) 
     {
-        return rand.nextInt((max - min) + 1) + min;  
+        int range = (max - min) + 1;
+        return (int)(Math.random() * range) + min;  
     }
     
     public static boolean colorTest(int[] colors, Graph g)
