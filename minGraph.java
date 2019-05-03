@@ -16,14 +16,13 @@ public class minGraph
             for(int v = 0; v < g.getVertexCount(); v++)
                 if(u != v && g.areAdjacent(u, v) && colors[u] == colors[v])
                 {
-                    System.out.println("Vertices " + u + " and " + v + " are adjacent and have color " + colors[u] + ".");
                     return false;
                 }
         
-        for(int color : colors)
-            System.out.print(color);
-            
-        System.out.println();
+        //for(int color : colors)
+        //    System.out.print(color + " ");
+        //    
+        //System.out.println();
             
         return true;
     }
@@ -34,9 +33,12 @@ public class minGraph
         int vertexCount = inputGraph.getVertexCount();
         int[] vertexColors = new int[vertexCount];
         
+        int minColorChoices = vertexCount;
+        int minColors[] = new int[vertexCount];
+        
         for (int colorChoices = vertexCount - 1; colorChoices > 0; colorChoices--)
         {
-            for (int attempt = 0; attempt <= 100; attempt++)
+            for (int attempt = 0; attempt <= 100000; attempt++)
             {
                 for (int node = 0; node < vertexColors.length; node++)
                 {
@@ -44,9 +46,18 @@ public class minGraph
                 }
                 
                 if (colorTest(vertexColors, inputGraph))
-                    break;
-                
+                {
+                    minColorChoices = colorChoices;
+                    minColors = vertexColors;
+                }
             }
         }
+        
+        
+        System.out.println("There were " + minColorChoices + " colors");
+        for(int color: minColors)
+            System.out.print(color + " ");
+            
+           
     }
 }
