@@ -1,7 +1,7 @@
 # Benjamin Chappell
 
-fileToProcess = "DSJC125.1.gr"
-fileToReturn = "dsjc1251.txt"
+fileToProcess = "2dsurface.txt"
+fileToReturn = "2dsurfacep.txt"
 
 def main(f, w):
     pFile = open(f, "r")
@@ -18,7 +18,7 @@ def main(f, w):
 
     adjMatrix = [[0 for i in range(0, vertexCount)] for i in range(0, vertexCount)]
     
-    for i in range(0, vertexCount):
+    for i in range(0, len(adjList)):
         for j in range(0, len(adjList[i])):
             adjMatrix[i][adjList[i][j]] = 1
 
