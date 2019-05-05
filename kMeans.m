@@ -25,11 +25,11 @@
 clear; close all; clc
 
 % Load dataset.
-X = load('dsjc2501.txt');
+X = load('2dsurfacep.txt');
 vertexCount = size(X, 1);
 
 % Select an initial set of centroids
-K = vertexCount / 2; % Arbitrary starting centroid count
+K = 4; % Arbitrary starting centroid count
 maxIters = 15; % Arbitrary amount of iterations.
 initialCentroids = kMeansInitCentroids(X, K);
 
@@ -38,12 +38,10 @@ idx = findClosestCentroids(X, initialCentroids);
 
 % Run K-Means Algorithm. The false at the end tells the function not to plot the progress.
 [centroids, idx] = runkMeans(X, initialCentroids, maxIters, false);
-fprintf("%i\n", idx)
-
 
 % Open the output file for writing.
-%output = 'currentResults.txt';
-%outputFile = fopen(output, 'w');
+output = 'currentResults.txt';
+outputFile = fopen('currentResults.txt', 'w');
 
-%fprintf(output, "%i\n", idx);
-%fclose(output);
+fprintf(outputFile, "%i\n", idx);
+fclose(outputFile);
