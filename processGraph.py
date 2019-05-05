@@ -16,14 +16,14 @@ def main(f, w):
 
         del adjList[i][0]
 
-    print (adjList)
+    #print (adjList)
 
     adjMatrix = [[0 for i in range(0, vertexCount)] for i in range(0, vertexCount)]
     
     for i in range(0, len(adjList)):
-        #print (i)
         for j in range(0, len(adjList[i])):
             adjMatrix[i][adjList[i][j]] = 1
+            print (str(i) + " " + str(j))
 
     for i in adjMatrix:
         for j in i:
