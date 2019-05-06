@@ -9,11 +9,11 @@ public class Graph
     //It also stores an array of degrees of vertices, a vertex-count and an edge-count.
     //Note that if (u, v) is in the edge set, both (u, v) and (v, u) will appear in the adjacency
     //list.  Also, both adjacencyMatrix[u][v] and adjacencyMatrix[v][u] will be true.
-    protected boolean[][] adjacencyMatrix;
-    protected int[][] adjacencyList;
-    protected int[] degreeArray;
-    protected int vertexCount;
-    protected int edgeCount;
+    public boolean[][] adjacencyMatrix;
+    public int[][] adjacencyList;
+    public int[] degreeArray;
+    public int vertexCount;
+    public int edgeCount;
 
     //This constructor reads in an undirected graph from the specified file.
     //Precondition:  The input is correctly formatted as follows.
