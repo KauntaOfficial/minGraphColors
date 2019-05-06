@@ -7,6 +7,7 @@ kmeans = 'octave kMeans.m'
 def main(kmeans):
     results = open("currentResults.txt", "r")
     toReturn = open("groups.txt", "a")
+    inOrderGroups = open("groupsInOrder.txt", "a")
 
     # Run kmeans on the current data set as defined by the stuff in kmeans.m
     os.system(kmeans)
@@ -27,11 +28,14 @@ def main(kmeans):
         groups[idx - 1].append(i)
 
     for i in range(0, len(groups)):
-        toReturn.write(str(i) + " ")
+        toReturn.write(str(i + 1) + " ")
 
         for j in groups[i]:
             toReturn.write(str(j) + " ")
         toReturn.write("\n")
+
+    for i in range(0, len(resultLines)):
+        inOrderGroups.write(str(i) + " " + resultLines[i])
     
     toReturn.write("\n")
     toReturn.close()

@@ -29,7 +29,7 @@ X = load('2dsurfacep.txt');
 vertexCount = size(X, 1);
 
 % Select an initial set of centroids
-K = 6; % Arbitrary starting centroid count
+K = 12; % Arbitrary starting centroid count
 maxIters = 30; % Arbitrary amount of iterations.
 initialCentroids = kMeansInitCentroids(X, K);
 
