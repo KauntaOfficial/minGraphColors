@@ -7,6 +7,9 @@ public class Greedy
         String currentFile = "DSJC125.1.gr"
         Graph currentGraph = new Graph(currentFile)
 
+        int vCount = currentGraph.vertexCount
+
+        Queue<Integer> order = new ArrayList<Integer>();
         
     }
 }
