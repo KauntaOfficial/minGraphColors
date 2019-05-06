@@ -1,7 +1,7 @@
 # Benjamin Chappell
 
-fileToProcess = "2dsurface.txt"
-fileToReturn = "2dsurfacep.txt"
+fileToProcess = "basic.txt"
+fileToReturn = "basicp.txt"
 
 def main(f, w):
     pFile = open(f, "r")
@@ -30,7 +30,6 @@ def main(f, w):
             if (adjMatrix[u][v] == 0):
                 adjMatrix[u][v] = 1
                 adjMatrix[v][u] = 1
-                print (str(u) + " " + str(v))
 
     for i in adjMatrix:
         for j in i:

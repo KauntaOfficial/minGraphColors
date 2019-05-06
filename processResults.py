@@ -36,8 +36,11 @@ def main(kmeans):
 
     for i in range(0, len(resultLines)):
         inOrderGroups.write(str(i) + " " + resultLines[i])
-    
+        
     toReturn.write("\n")
+    inOrderGroups.write("\n")
+    
+    inOrderGroups.close()
     toReturn.close()
 
 if __name__ == "__main__":
