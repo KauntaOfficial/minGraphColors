@@ -11,20 +11,6 @@ public class minGraph
         return (int)(Math.random() * range) + min;  
     }
     
-    //Determine if the graph passes the color test.
-    public static boolean colorTest(int[] colors, Graph g)
-    {
-        for(int u = 0; u < g.adjacencyList.length; u++)
-            for(int v = 0; v < g.adjacencyList[u].length; v++)
-                if(colors[u] == colors[g.adjacencyList[u][v]] && u != v)
-                {
-                    return false;
-                }
-
-        return true;
-    }
-    
-    
     static int countDistinct(int arr[], int n) 
     { 
         int res = 1; 
@@ -65,44 +51,23 @@ public class minGraph
             //Initialize adjacent nodes into the arraylist.
             for (int j = 0; j < inputGraph.adjacencyList[i].length; j++)
             {
-                adjacentVertexColors.add(vertexColors[j]);
+                adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[i][j]]);
             }
             
-            //Initialize the current node's color to 0.
+
+            //Initialize every element's color to 0.
             vertexColors[i] = 0;
             
-            //If adjacent nodes have the same color as the current node, increment those               //colors by one.
+            //If adjacent nodes have the same color as the current node, increment those colors by one.
             while (adjacentVertexColors.contains(vertexColors[i]))
             {
                 vertexColors[i] = vertexColors[i] + 1;
             }
         }
         
-        
-        
-        /*for (int colorChoices = vertexCount - 1; colorChoices > 0; colorChoices--)
-        {
-            for (int attempt = 0; attempt <= 100000; attempt++)
-            {
-                for (int node = 0; node < vertexColors.length; node++)
-                {
-                    vertexColors[node] = randomInt(0, colorChoices);
-                }
-                
-                if (colorTest(vertexColors, inputGraph))
-                {
-                    minColorChoices = colorChoices + 1;
-                    System.arraycopy(vertexColors, 0, minColors, 0, vertexColors.length);
-                }
-            }
-        }*/
-        
-        inputGraph.colorTest
-        
+        //Display results.
         System.out.println("There were " + countDistinct(vertexColors, vertexColors.length) + " colors");
         for(int color: vertexColors)
-            System.out.print(color + " ");
-            
-           
+            System.out.print(color + " ");                     
     }
 }
