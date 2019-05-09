@@ -29,8 +29,8 @@ X = load('2dsurfacep.txt');
 vertexCount = size(X, 1);
 
 % Select an initial set of centroids
-K = 2; % Arbitrary starting centroid count
-maxIters = 10; % Arbitrary amount of iterations.
+K = 6; % Arbitrary starting centroid count
+maxIters = 15; % Arbitrary amount of iterations.
 initialCentroids = kMeansInitCentroids(X, K);
 
 % Find the closest centroids ot the examples using the init centroids.

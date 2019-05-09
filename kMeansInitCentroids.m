@@ -23,6 +23,7 @@ centroidsComputed = 1;
 while (centroidsComputed < K)
   weights = zeros(size(X,1), 1);
   
+  % Compute the weights based on the distances from the nearest node
   for ex=1:size(X,1)
     distances = zeros(1, K);
 
@@ -33,8 +34,7 @@ while (centroidsComputed < K)
     [m weights(ex)] = min(distances);
   end
   
-  centroids(1, :)
-  weights
+  weights = weights .^ 3;
   
   % Choose a random, weighted node based on the distances from the centroids.
   % Sum the weights of the nodes.
@@ -53,6 +53,12 @@ while (centroidsComputed < K)
     end
     rnd = rnd - weights(i);
   end
+  
+  % Choose the vertex furthest away from all current centroids and add it
+  % as the newest centroid.
+  %[m im] = max(weights);
+  %centroidsComputed = centroidsComputed + 1;
+  %centroids(centroidsComputed, :) = X(im, :);
 endwhile
 
 % =============================================================
