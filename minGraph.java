@@ -2,6 +2,7 @@
 
 import java.util.ArrayList;
 import java.lang.Math;
+import java.util.Collections;
 
 public class minGraph
 {
@@ -152,10 +153,12 @@ public class minGraph
                     listOfVertices.add(i);
                 }
 
+                Collections.shuffle(listOfVertices);
+
                 //Go through every vertex randomly.
                 for (int j = 0; j < vertexCount; j++)
                 {
-                    int selectedElement = listOfVertices.remove(randomInt(0, listOfVertices.size() - 1));
+                    int selectedElement = listOfVertices.get(j);
 
                     adjacentVertexColors = new ArrayList<Integer>();
 
