@@ -20,19 +20,21 @@ randidx = randperm(size(X, 1));
 centroids(1, :) = X(randidx(1), :);
 centroidsComputed = 1;
 
-while (centroidsComputed <= K)
+while (centroidsComputed < K)
   weights = zeros(size(X,1), 1);
-
-  % For Each X, compute the distance between X and the nearest center already chosen.
-  for ex=1:size(X,1)
-    distances = zeros(1, centroidsComputed);
   
-    for centroid = 1:centroidsComputed
-      distances(centroid) = (sum((X(ex,:) - centroids(centroid,:)).^2));
+  for ex=1:size(X,1)
+    distances = zeros(1, K);
+
+    for k=1:K
+      distances(k) = (sum((X(ex,:) - centroids(k,:)).^2));
     end
   
     [m weights(ex)] = min(distances);
   end
+  
+  centroids(1, :)
+  weights
   
   % Choose a random, weighted node based on the distances from the centroids.
   % Sum the weights of the nodes.

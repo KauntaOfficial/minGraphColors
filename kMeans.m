@@ -25,7 +25,7 @@
 clear; close all; clc
 
 % Load dataset.
-X = load('dichotomyp.txt');
+X = load('2dsurfacep.txt');
 vertexCount = size(X, 1);
 
 % Select an initial set of centroids
