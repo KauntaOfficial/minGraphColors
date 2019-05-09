@@ -1,7 +1,7 @@
 # Benjamin Chappell
 
-fileToProcess = "dichotomy.txt"
-fileToReturn = "dichotomyp.txt"
+fileToProcess = "DSJC1000.1.gr"
+fileToReturn = "1000.1.txt"
 
 def main(f, w):
     pFile = open(f, "r")

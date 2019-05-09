@@ -25,11 +25,11 @@
 clear; close all; clc
 
 % Load dataset.
-X = load('2dsurfacep.txt');
+X = load('1000.1.txt');
 vertexCount = size(X, 1);
 
 % Select an initial set of centroids
-K = 6; % Arbitrary starting centroid count
+K = 200; % Arbitrary starting centroid count
 maxIters = 15; % Arbitrary amount of iterations.
 initialCentroids = kMeansInitCentroids(X, K);
 
