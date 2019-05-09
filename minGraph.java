@@ -1,4 +1,4 @@
-// By Ivy Zhang and Co.
+// By Co. and Ivy Zhang
 
 import java.util.ArrayList;
 import java.lang.Math;
@@ -97,47 +97,89 @@ public class minGraph
             }
         }
         
-        //
-        for (int node = 0; node < inputGraph.adjacencyList.length; node++)
+        /* Alternating a - c -e ... - b -d , etc. */
+        for (int startingNode = 0; startingNode < inputGraph.adjacencyList.length; startingNode++)
         {
-            ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
+            //Create an array to temporarily store the color for each corresponding vertex.
             int[] vertexColors = new int[vertexCount];
             
-            ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
-            
-            //Add integers that correspond to the nodes of a graph to an arraylist.
-            for (int i = 0; i < vertexCount; i++)
+            //Iterate through every node in the adjacencyList.
+            for (int counter = 0; counter < inputGraph.adjacencyList.length; counter++)
             {
-                listOfVertices.add(i);
-            }
-            
-            //
-            for (int j = 0; j < listOfVertices.size(); j++)
-            {
-                int selectedElement = listOfVertices.remove(randomInt(0, listOfVertices.size() - 1));
-                                                            
-                adjacentVertexColors = new ArrayList<Integer>();
+                //Loop back to the first node if you're on an index larger than the number of vertices.
+                int i = (counter + startingNode) % vertexCount;
+                
+                //Create an arraylist to store vertex colors
+                ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
 
-                //Adding adjacent node colors to arraylist.
-                for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
+                //Add adjacent node colors into the arraylist.
+                for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[i].length; adjacentNode++)
                 {
-                    adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
+                    adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[i][adjacentNode]]);
                 }
 
                 //Initialize every element's color to 0.
-                vertexColors[selectedElement] = 0;
+                vertexColors[i] = 0;
 
                 //If adjacent nodes have the same color as the current node, increment those colors by one.
-                while (adjacentVertexColors.contains(vertexColors[selectedElement]))
+                while (adjacentVertexColors.contains(vertexColors[i]))
                 {
-                      vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
-                } 
+                    vertexColors[i] = vertexColors[i] + 1;
+                }     
             }
-                                                            
-            if (node == 0 || countDistinct(vertexColors, vertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
+            
+            if (startingNode == 0 || countDistinct(vertexColors, vertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
             {
                 //This array copy is good for large datasets.
                 System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
+            }
+        }
+        
+        
+        /* Random thingy ma bob runthroughs */
+        for (int timesToRun = 0; timesToRun < 20; timesToRun++)
+        {
+            for (int node = 0; node < inputGraph.adjacencyList.length; node++)
+            {
+                ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
+                int[] vertexColors = new int[vertexCount];
+
+                ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
+
+                //Add integers that correspond to the nodes of a graph to an arraylist.
+                for (int i = 0; i < vertexCount; i++)
+                {
+                    listOfVertices.add(i);
+                }
+
+                //Go through every vertex randomly.
+                for (int j = 0; j < vertexCount; j++)
+                {
+                    int selectedElement = listOfVertices.remove(randomInt(0, listOfVertices.size() - 1));
+
+                    adjacentVertexColors = new ArrayList<Integer>();
+
+                    //Adding adjacent node colors to arraylist.
+                    for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
+                    {
+                        adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
+                    }
+
+                    //Initialize every element's color to 0.
+                    vertexColors[selectedElement] = 0;
+
+                    //If adjacent nodes have the same color as the current node, increment those colors by one.
+                    while (adjacentVertexColors.contains(vertexColors[selectedElement]))
+                    {
+                          vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
+                    } 
+                }
+
+                if (countDistinct(vertexColors, vertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
+                {
+                    //This array copy is good for large datasets.
+                    System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
+                }
             }
         }
         
