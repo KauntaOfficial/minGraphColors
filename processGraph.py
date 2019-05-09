@@ -1,7 +1,7 @@
 # Benjamin Chappell
 
-fileToProcess = "basic.txt"
-fileToReturn = "basicp.txt"
+fileToProcess = "dichotomy.txt"
+fileToReturn = "dichotomyp.txt"
 
 def main(f, w):
     pFile = open(f, "r")
