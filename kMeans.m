@@ -32,6 +32,7 @@ vertexCount = size(X, 1);
 K = 200; % Arbitrary starting centroid count
 maxIters = 15; % Arbitrary amount of iterations.
 initialCentroids = kMeansInitCentroids(X, K);
+disp ("initialized centroids")
 
 % Find the closest centroids ot the examples using the init centroids.
 idx = findClosestCentroids(X, initialCentroids);
