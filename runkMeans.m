@@ -35,7 +35,7 @@ idx = zeros(m, 1);
 for i=1:max_iters
     
     % Output progress
-    disp('K-Means iteration %d/%d...\n', i, max_iters);
+    printf('K-Means iteration %d/%d...\n', i, max_iters);
     if exist('OCTAVE_VERSION')
         fflush(stdout);
     end

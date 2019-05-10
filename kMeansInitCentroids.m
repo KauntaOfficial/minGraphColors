@@ -27,38 +27,39 @@ while (centroidsComputed < K)
   for ex=1:size(X,1)
     distances = zeros(1, K);
 
-    for k=1:K
+    for k=1:centroidsComputed
       distances(k) = (sum((X(ex,:) - centroids(k,:)).^2));
     end
   
     [m weights(ex)] = min(distances);
   end
   
-  weights = weights .^ 3;
+  %weights = weights .^ 3;
   
   % Choose a random, weighted node based on the distances from the centroids.
   % Sum the weights of the nodes.
-  sumOfWeights = sum(weights);
+  %sumOfWeights = sum(weights);
   
   % Get a random number between 1 and the sum of the weights.
-  rnd = randi(sumOfWeights);
+  %rnd = randi(sumOfWeights);
   
   % Iterate through the list of items, subtracting the weight from the random number 
   % Until a weight is greater than the remaining numbers.
-  for i=1:size(X,1)
-    if rnd < weights(i)
-      centroidsComputed = centroidsComputed + 1;
-      centroids(centroidsComputed, :) = X(i, :);
-      break
-    end
-    rnd = rnd - weights(i);
-  end
+  %for i=1:size(X,1)
+  %  if rnd < weights(i)
+  %    centroidsComputed = centroidsComputed + 1;
+  %    centroids(centroidsComputed, :) = X(i, :);
+  %    break
+  %  end
+  %  rnd = rnd - weights(i);
+  %end
   
   % Choose the vertex furthest away from all current centroids and add it
   % as the newest centroid.
-  %[m im] = max(weights);
-  %centroidsComputed = centroidsComputed + 1;
-  %centroids(centroidsComputed, :) = X(im, :);
+  [m im] = max(weights);
+  centroidsComputed = centroidsComputed + 1;
+  centroids(centroidsComputed, :) = X(im, :);
+  printf("Centroid Calculated %d\n", centroidsComputed);
 endwhile
 
 % =============================================================
