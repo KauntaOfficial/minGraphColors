@@ -30,7 +30,7 @@ vertexCount = size(X, 1);
 
 % Select an initial set of centroids
 K = 32; % Arbitrary starting centroid count
-maxIters = 50; % Arbitrary amount of iterations.
+maxIters = 75; % Arbitrary amount of iterations.
 initialCentroids = kMeansInitCentroids(X, K);
 finishedInit = disp("Finished initialzing Centroids");
 

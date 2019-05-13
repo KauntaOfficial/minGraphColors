@@ -21,15 +21,12 @@ idx = zeros(size(X,1), 1);
 % Note: You can use a for-loop over the examples to compute this.
 %
 
-for ex=1:size(X,1)
-  distances = zeros(1, K);
-
-  for k=1:K
-    distances(k) = (sum((X(ex,:) - centroids(k,:)).^2));
-  end
-  
-  [m idx(ex)] = min(distances);
-end
+for i = 1:size(X,1)
+  % z = centroids .- X(i, :); // Only Octave compatible
+  z = bsxfun(@minus, centroids, X(i, :));
+  zy = sum(z.^2, 2);
+  [~, idx(i)] = min(zy);
+end 
 
 
 

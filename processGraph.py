@@ -20,11 +20,6 @@ def main(f, w):
 
     adjMatrix = [[0 for i in range(0, vertexCount)] for j in range(0, vertexCount)]
     
-    #for i in range(0, len(adjList)):
-    #   for j in range(0, len(adjList[i])):
-    #        adjMatrix[i][adjList[i][j]] = 1
-    #        print (str(i) + " " + str(j))
-
     for u in range(0, len(adjList)):
         for v in adjList[u]:
             if (adjMatrix[u][v] == 0):
