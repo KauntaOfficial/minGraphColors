@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.lang.Math;
 import java.util.Collections;
 
-public class minGraph
+public class MinGraph
 {
     public static boolean colorTest(int[] colors, Graph g)
     {
@@ -57,65 +57,82 @@ public class minGraph
         //Create an array to store the best vertex color combination.
         int[] optimumVertexColors = new int[vertexCount];
         
-        for (int timesToRun = 1; timesToRun <= 10; timesToRun++)
+        int correctCounter = 0;
+        
+        System.out.println("Run number:" + "," + "Run time:" + "," + "Colors:");
+        
+        for (int trialNumber = 0; trialNumber < 10; trialNumber++)
         {
-            long start = System.nanoTime() / 1000000;
-
-            /* Random thingy ma bob runthroughs */
-            for (int runNumber = 0; runNumber < timesToRun; runNumber++)
-            {
-                optimumVertexColors = new int[vertexCount];
+            //Reset the correctCounter.
+            correctCounter = 0;
                 
-                for (int node = 0; node < inputGraph.adjacencyList.length; node++)
+            //Set the number of times the random algorithm runs.
+            for (int timesToRun = 1; timesToRun <= 10; timesToRun++)
+            {
+                long start = System.nanoTime() / 1000000;
+
+                //Run the random algorithm the set number of times.
+                for (int runNumber = 0; runNumber < timesToRun; runNumber++)
                 {
-                    ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
-                    int[] vertexColors = new int[vertexCount];
+                    optimumVertexColors = new int[vertexCount];
 
-                    ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
-
-                    //Add integers that correspond to the nodes of a graph to an arraylist.
-                    for (int i = 0; i < vertexCount; i++)
+                    for (int node = 0; node < inputGraph.adjacencyList.length; node++)
                     {
-                        listOfVertices.add(i);
-                    }
+                        ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
+                        int[] vertexColors = new int[vertexCount];
 
-                    Collections.shuffle(listOfVertices);
+                        ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
 
-                    //Go through every vertex randomly.
-                    for (int j = 0; j < vertexCount; j++)
-                    {
-                        int selectedElement = listOfVertices.get(j);
-
-                        adjacentVertexColors = new ArrayList<Integer>();
-
-                        //Adding adjacent node colors to arraylist.
-                        for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
+                        //Add integers that correspond to the nodes of a graph to an arraylist.
+                        for (int i = 0; i < vertexCount; i++)
                         {
-                            adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
+                            listOfVertices.add(i);
                         }
 
-                        //Initialize every element's color to 0.
-                        vertexColors[selectedElement] = 0;
+                        Collections.shuffle(listOfVertices);
 
-                        //If adjacent nodes have the same color as the current node, increment those colors by one.
-                        while (adjacentVertexColors.contains(vertexColors[selectedElement]))
+                        //Go through every vertex randomly.
+                        for (int j = 0; j < vertexCount; j++)
                         {
-                              vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
-                        }
-                    }
+                            int selectedElement = listOfVertices.get(j);
 
-                    if (node == 0 || countDistinct(vertexColors, vertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
-                    {
-                        //This array copy is good for large datasets.
-                        System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
+                            adjacentVertexColors = new ArrayList<Integer>();
+
+                            //Adding adjacent node colors to arraylist.
+                            for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
+                            {
+                                adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
+                            }
+
+                            //Initialize every element's color to 0.
+                            vertexColors[selectedElement] = 0;
+
+                            //If adjacent nodes have the same color as the current node, increment those colors by one.
+                            while (adjacentVertexColors.contains(vertexColors[selectedElement]))
+                            {
+                                  vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
+                            }
+                        }
+
+                        if (node == 0 || countDistinct(vertexColors, vertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
+                        {
+                            //This array copy is good for large datasets.
+                            System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
+                        }
                     }
                 }
+
+                long end = System.nanoTime() / 1000000;
+
+                //Print the number of times the random algorithm was run, the runtime, and the number of colors
+                System.out.print((timesToRun) + "," + (end - start) + "," + countDistinct(optimumVertexColors, optimumVertexColors.length));        
             }
-
-            long end = System.nanoTime() / 1000000;
-
-            //Print the number of times the random algorithm was run, the runtime, and the number of colors
-            System.out.println((timesToRun) + "," + (end - start) + "," + countDistinct(optimumVertexColors, optimumVertexColors.length));
+                if (countDistinct(optimumVertexColors, optimumVertexColors.length) == 7)
+                {
+                    correctCounter++;
+                }
         }
+          
+        System.out.println("," + correctCounter/10);
     }
 }
