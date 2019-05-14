@@ -61,18 +61,23 @@ public class MinGraph
         
         System.out.println("Run number:" + "," + "Run time:" + "," + "Colors:");
         
-        for (int trialNumber = 0; trialNumber < 10; trialNumber++)
+        const int NUMBER_OF_TRIAL_RUNS = 10;
+        
+        for (int timesToRun = 0; timesToRun < 500; timesToRun++)
         {
             //Reset the correctCounter.
             correctCounter = 0;
+            totalRuntime = 0; 
+            
+            int[] times = new int[timesToRun];
                 
             //Set the number of times the random algorithm runs.
-            for (int timesToRun = 1; timesToRun <= 10; timesToRun++)
+            for (int trialNumber = 1; trialNumber <= NUMBER_OF_TRIAL_RUNS; trialNumber++)
             {
                 long start = System.nanoTime() / 1000000;
 
                 //Run the random algorithm the set number of times.
-                for (int runNumber = 0; runNumber < timesToRun; runNumber++)
+                for (int runNumber = 0; runNumber < trialNumber; runNumber++)
                 {
                     optimumVertexColors = new int[vertexCount];
 
@@ -120,19 +125,25 @@ public class MinGraph
                             System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
                         }
                     }
+                    
+                    //Only valid for 125.gr
+                    if (countDistinct(optimumVertexColors, optimumVertexColors.length) == 7)
+                    {
+                        correctCounter++;
+                    }
                 }
 
                 long end = System.nanoTime() / 1000000;
+                
+                totalRunTime += end - start;
 
                 //Print the number of times the random algorithm was run, the runtime, and the number of colors
-                System.out.print((timesToRun) + "," + (end - start) + "," + countDistinct(optimumVertexColors, optimumVertexColors.length));        
+                System.out.print((timesToRun) + "," + (totalRuntime / NUMBER_OF_TRIAL_RUNS) + "," + );    
+                
+                
+                
+                System.out.println((timesToRun) + "," + "," + correctCounter/10);
             }
-                if (countDistinct(optimumVertexColors, optimumVertexColors.length) == 7)
-                {
-                    correctCounter++;
-                }
         }
-          
-        System.out.println("," + correctCounter/10);
     }
 }
