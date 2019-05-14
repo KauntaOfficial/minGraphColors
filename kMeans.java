@@ -1,6 +1,6 @@
 // By Ivy Zhang and Co.
 
-import jblas.*;
+import org.jblas.*;
 
 // Need to make sure that the jblas package is installed.
 
