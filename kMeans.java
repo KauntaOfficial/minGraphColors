@@ -58,12 +58,30 @@ public class kMeans
     assigned to it. */
     public static DoubleMatrix computeCentroids(DoubleMatrix X, DoubleMatrix idx, int K)
     {
-        for (int k = 0; k < K; k++)
+        // Doesn't really matter which one is m and n, bc X is square, aka don't try to 
+        // Generalize this because m and n might not be right and I don't care to check.
+        int m = X.rows;
+        int n = X.columns;
+        DoubleMatrix centroids = DoubleMatrix.zeros(K, n);
+
+        // k is a double for easy comparison with stuff
+        for (double k = 0; k < K; k++)
         {
             // Follow what's done in computeCentroids.m. I'm far too dead to do it right now.
+            DoubleMatrix inThisCluster = idx.eq(k);
+            DoubleMatrix pointsInThisCluster = inThisCluster.columnSums();
+            DoubleMatrix inThisClusterMatrix = DoubleMatrix.zeros(m, n);
+
+            for (int i = 0; i < n; i++)
+            {
+                inThisClusterMatrix.putColumn(i, inThisCluster);
+            }
+
+            DoubleMatrix XofThoseInMatrix = X.mul(inThisClusterMatrix);
+            centroids.putRow((int)k, (XofThoseInMatrix.columnSums().div(pointsInThisCluster)));
         }
 
-        return X; //Placeholder
+        return centroids;
     }
 
     // Need better variable names for z and zy
@@ -181,5 +199,14 @@ public class kMeans
 
         // Find the closest centroids for each example using the initial centriods.
         DoubleMatrix idx = findClosestCentroids(X, initialCentroids, K);
+
+        // Run K-Means Algorithm
+        idx = runkMeans(X, initialCentroids, maxIters, K);
+
+        for (int i = 0; i < idx.length; i++)
+        {
+            System.out.print(idx.get(i) + " ");
+        }
+        System.out.println();
     }
 }
