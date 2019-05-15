@@ -37,7 +37,7 @@ public class kMeans
 
             // Choose the weight to be the distance from the centroid closest to the
             // Current vertex
-            weights.put(i, zy.min());
+            idx.put(i, zy.min());
         }
     }
 
