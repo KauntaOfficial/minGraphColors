@@ -62,6 +62,8 @@ public class kMeans
         {
             // Follow what's done in computeCentroids.m. I'm far too dead to do it right now.
         }
+
+        return X; //Placeholder
     }
 
     // Need better variable names for z and zy
@@ -90,6 +92,8 @@ public class kMeans
             // Current vertex
             idx.put(i, zy.min());
         }
+
+        return idx;
     }
 
     public static DoubleMatrix initCentroids(DoubleMatrix X, int K)
