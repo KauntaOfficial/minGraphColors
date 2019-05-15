@@ -14,14 +14,65 @@ public class kMeans
         return (int)(Math.random() * max) + min;
     }
     
-    public static DoubleMatrix findClosestCentroids(DoubleMatrix X, DoubleMatrix initCentroids)
+    /*RUNKMEANS runs the K-Means algorithm on data matrix X, where each row of X
+    is a single example
+    [centroids, idx] = RUNKMEANS(X, initial_centroids, max_iters, ...
+    plot_progress) runs the K-Means algorithm on data matrix X, where each 
+    row of X is a single example. It uses initial_centroids used as the
+    initial centroids. max_iters specifies the total number of interactions 
+    of K-Means to execute. plot_progress is a true/false flag that 
+    indicates if the function should also plot its progress as the 
+    learning happens. This is set to false by default. runkMeans returns 
+    centroids, a Kxn matrix of the computed centroids and idx, a m x 1 
+    vector of centroid assignments (i.e. each entry in range [1..K]) */
+    public static DoubleMatrix runkMeans(DoubleMatrix X, DoubleMatrix initialCentroids, int maxIters, int K)
+    {
+        // Initialize Values
+        int m = X.rows;
+        int n = X.columns;
+        DoubleMatrix centroids = initialCentroids;
+        DoubleMatrix prevCentroids = centroids;
+        DoubleMatrix idx = DoubleMatrix.zeros(m, 1);
+
+        // Run K-Means
+        for (int i = 0; i < maxIters; i++)
+        {
+            // For each example in X, assign it to the closest centroid.
+            idx = findClosestCentroids(X, centroids, K);
+
+            //Given the memberships, compute new centriods.
+            centroids = computeCentroids(X, idx, K);
+        }
+
+        return idx;
+    }
+
+    /* COMPUTECENTROIDS returns the new centroids by computing the means of the 
+    data points assigned to each centroid.
+    centroids = COMPUTECENTROIDS(X, idx, K) returns the new centroids by 
+    computing the means of the data points assigned to each centroid. It is
+    given a dataset X where each row is a single data point, a vector
+    idx of centroid assignments (i.e. each entry in range [1..K]) for each
+    example, and K, the number of centroids. You should return a matrix
+    centroids, where each row of centroids is the mean of the data points
+    assigned to it. */
+    public static DoubleMatrix computeCentroids(DoubleMatrix X, DoubleMatrix idx, int K)
+    {
+        for (int k = 0; k < K; k++)
+        {
+            // Follow what's done in computeCentroids.m. I'm far too dead to do it right now.
+        }
+    }
+
+    // Need better variable names for z and zy
+    public static DoubleMatrix findClosestCentroids(DoubleMatrix X, DoubleMatrix initCentroids, int K)
     {
         DoubleMatrix idx = DoubleMatrix.zeros(X.columns, 1);
 
         for (int i = 0; i < X.columns; i++)
         {
             // Compute the distance between the row of X and each of the centroids.
-            DoubleMatrix z = centroids.subRowVector(X.getRow(i));
+            DoubleMatrix z = initCentroids.subRowVector(X.getRow(i));
                 
             DoubleMatrix zy = DoubleMatrix.zeros(K);
             // Iterate through each of the rows of z. Sums the element-wise distances from 
@@ -125,6 +176,6 @@ public class kMeans
         System.out.println("Finished Initializing Centroids");
 
         // Find the closest centroids for each example using the initial centriods.
-        DoubleMatrix idx = findClosestCentroids(X, initialCentroids);
+        DoubleMatrix idx = findClosestCentroids(X, initialCentroids, K);
     }
 }
