@@ -90,5 +90,6 @@ public class kMeans
         
         DoubleMatrix X = formAdjMatrix(adjMatrix);
         DoubleMatrix centroids = initCentroids(X, K);
+        System.out.println("Finished Initializing Centroids");
     }
 }
