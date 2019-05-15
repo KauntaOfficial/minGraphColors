@@ -29,7 +29,7 @@ X = load('1000.1.txt');
 vertexCount = size(X, 1);
 
 % Select an initial set of centroids
-K = 200; % Arbitrary starting centroid count
+K = 50; % Arbitrary starting centroid count
 maxIters = 100; % Arbitrary amount of iterations.
 initialCentroids = kMeansInitCentroids(X, K);
 finishedInit = disp("Finished initialzing Centroids");

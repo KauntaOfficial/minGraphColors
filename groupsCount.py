@@ -16,12 +16,10 @@ def main(readf, writef):
         writef.write(str(i + 1) + " - " + str(len(groups[i]) - 1) + "\n")
         groupLengths.append(len(groups[i]) - 1)
 
-    print groupLengths
 
     average = sum(groupLengths) / len(groupLengths)
-    writef.write("Average: " + str(average)
+    writef.write("Average: " + str(average))
 
-    print groupLengths
 
 if __name__ == "__main__":
     main(readf, writef)
