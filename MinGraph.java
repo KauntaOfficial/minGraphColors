@@ -58,12 +58,13 @@ public class MinGraph
         int[] optimumVertexColors = new int[vertexCount];
         
         int correctCounter = 0;
+        int totalRuntime = 0;
         
         System.out.println("Run number:" + "," + "Run time:" + "," + "Colors:");
         
-        const int NUMBER_OF_TRIAL_RUNS = 10;
+        final float NUMBER_OF_TRIAL_RUNS = 10;
         
-        for (int timesToRun = 0; timesToRun < 500; timesToRun++)
+        for (int timesToRun = 0; timesToRun < 500; timesToRun += 10)
         {
             //Reset the correctCounter.
             correctCounter = 0;
@@ -77,7 +78,7 @@ public class MinGraph
                 long start = System.nanoTime() / 1000000;
 
                 //Run the random algorithm the set number of times.
-                for (int runNumber = 0; runNumber < trialNumber; runNumber++)
+                for (int runNumber = 0; runNumber < timesToRun; runNumber++)
                 {
                     optimumVertexColors = new int[vertexCount];
 
@@ -126,24 +127,20 @@ public class MinGraph
                         }
                     }
                     
-                    //Only valid for 125.gr
-                    if (countDistinct(optimumVertexColors, optimumVertexColors.length) == 7)
-                    {
-                        correctCounter++;
-                    }
+                }
+                //Only valid for 125.gr
+                if (countDistinct(optimumVertexColors, optimumVertexColors.length) == 7)
+                {
+                    correctCounter++;
                 }
 
                 long end = System.nanoTime() / 1000000;
                 
-                totalRunTime += end - start;
-
-                //Print the number of times the random algorithm was run, the runtime, and the number of colors
-                System.out.print((timesToRun) + "," + (totalRuntime / NUMBER_OF_TRIAL_RUNS) + "," + );    
-                
-                
-                
-                System.out.println((timesToRun) + "," + "," + correctCounter/10);
+                totalRuntime += end - start;
             }
+          
+            //Print the number of times the random algorithm was run, the runtime, and the number of colors
+            System.out.println((timesToRun) + "," + (totalRuntime / NUMBER_OF_TRIAL_RUNS) + "," + correctCounter / NUMBER_OF_TRIAL_RUNS);
         }
     }
 }
