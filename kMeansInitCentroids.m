@@ -27,7 +27,7 @@ while (centroidsComputed < K)
     % z = centroids .- X(i, :); // Only Octave compatible
     z = bsxfun(@minus, centroids, X(i, :))
     zy = sum(z.^2, 2);
-    [~, weights(i)] = min(zy);
+    [weights(i), ~] = min(zy);
   end 
   
   % Choose the vertex furthest away from all current centroids and add it
