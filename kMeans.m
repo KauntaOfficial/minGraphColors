@@ -25,12 +25,12 @@
 clear; close all; clc
 
 % Load dataset.
-X = load('dichotomyp.txt');
+X = load('1000.1.txt');
 vertexCount = size(X, 1);
 
 % Select an initial set of centroids
-K = 2; % Arbitrary starting centroid count
-maxIters = 5; % Arbitrary amount of iterations.
+K = 100; % Arbitrary starting centroid count
+maxIters = 75; % Arbitrary amount of iterations.
 initialCentroids = kMeansInitCentroids(X, K);
 finishedInit = disp("Finished initialzing Centroids");
 
