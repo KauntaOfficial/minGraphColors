@@ -98,45 +98,6 @@ public class minGraph
             }
         }
         
-        /* Alternating a - c -e ... - b -d , etc. */
-        for (int startingNode = 0; startingNode < inputGraph.adjacencyList.length; startingNode++)
-        {
-            //Create an array to temporarily store the color for each corresponding vertex.
-            int[] vertexColors = new int[vertexCount];
-            
-            //Iterate through every node in the adjacencyList.
-            for (int counter = 0; counter < inputGraph.adjacencyList.length; counter++)
-            {
-                //Loop back to the first node if you're on an index larger than the number of vertices.
-                int i = (counter + startingNode) % vertexCount;
-                
-                //Create an arraylist to store vertex colors
-                ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
-
-                //Add adjacent node colors into the arraylist.
-                for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[i].length; adjacentNode++)
-                {
-                    adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[i][adjacentNode]]);
-                }
-
-                //Initialize every element's color to 0.
-                vertexColors[i] = 0;
-
-                //If adjacent nodes have the same color as the current node, increment those colors by one.
-                while (adjacentVertexColors.contains(vertexColors[i]))
-                {
-                    vertexColors[i] = vertexColors[i] + 1;
-                }     
-            }
-            
-            if (startingNode == 0 || countDistinct(vertexColors, vertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
-            {
-                //This array copy is good for large datasets.
-                System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
-            }
-        }
-        
-        
         /* Random thingy ma bob runthroughs */
         for (int timesToRun = 0; timesToRun < 20; timesToRun++)
         {
