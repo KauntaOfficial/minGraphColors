@@ -64,7 +64,7 @@ public class MinGraph
         
         final float NUMBER_OF_TRIAL_RUNS = 10;
         
-        for (int timesToRun = 0; timesToRun < 500; timesToRun += 10)
+        for (int timesToRun = 0; timesToRun < 500; timesToRun += 1)
         {
             //Reset the correctCounter.
             correctCounter = 0;
@@ -76,12 +76,11 @@ public class MinGraph
             for (int trialNumber = 1; trialNumber <= NUMBER_OF_TRIAL_RUNS; trialNumber++)
             {
                 long start = System.nanoTime() / 1000000;
+                optimumVertexColors = new int[vertexCount];
 
                 //Run the random algorithm the set number of times.
                 for (int runNumber = 0; runNumber < timesToRun; runNumber++)
                 {
-                    optimumVertexColors = new int[vertexCount];
-
                     for (int node = 0; node < inputGraph.adjacencyList.length; node++)
                     {
                         ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
@@ -120,7 +119,7 @@ public class MinGraph
                             }
                         }
 
-                        if (node == 0 || countDistinct(vertexColors, vertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
+                        if ((node == 0 && runNumber == 0) || countDistinct(vertexColors, vertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
                         {
                             //This array copy is good for large datasets.
                             System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
@@ -128,8 +127,8 @@ public class MinGraph
                     }
                     
                 }
-                //Only valid for 125.gr
-                if (countDistinct(optimumVertexColors, optimumVertexColors.length) == 7)
+                //Valid for flat 1000
+                if (countDistinct(optimumVertexColors, optimumVertexColors.length) == 50)
                 {
                     correctCounter++;
                 }
@@ -140,7 +139,7 @@ public class MinGraph
             }
           
             //Print the number of times the random algorithm was run, the runtime, and the number of colors
-            System.out.println((timesToRun) + "," + (totalRuntime / NUMBER_OF_TRIAL_RUNS) + "," + correctCounter / NUMBER_OF_TRIAL_RUNS);
+            System.out.println((timesToRun) + "," + (totalRuntime / NUMBER_OF_TRIAL_RUNS) + "," + (correctCounter / NUMBER_OF_TRIAL_RUNS));
         }
     }
 }
