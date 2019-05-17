@@ -22,6 +22,31 @@ public class KMeans
     DoubleMatrix initialIdx;
     DoubleMatrix finalIdx; // I don't know if I want to keep this, see what happens with it.
 
+    // Second constructor without default values. Allows explicit definition of K and MaxIters.
+    public KMeans(String file, int K_, int maxIters_) throws FileNotFoundException
+    {
+        inputFile = new File(file);
+        inputGraph = new Graph(inputFile);
+
+        adjMatrix = inputGraph.adjacencyMatrix;
+        vertexCount = inputGraph.getVertexCount();
+
+        //K is the amount of centroids we want.
+        K = K_;
+
+        // max iters the the maximum iterations of the algorithm.
+        maxIters = maxIters_;
+
+        //Create X from the adj matrix
+        X = formAdjMatrix(adjMatrix);
+
+        // Get the initial centroids.
+        initialCentroids = initCentroids(X, K);
+
+        // Get the initial idx values.
+        initialIdx = findClosestCentroids(X, initialCentroids, K);
+    }
+
     //Default constructor, still requires a file.
     public KMeans(String file) throws FileNotFoundException
     {
@@ -53,6 +78,12 @@ public class KMeans
         return (int)(Math.random() * max) + min;
     }
     
+    //Shell for runKMeans
+    public DoubleMatrix runkMeans()
+    {
+        return runkMeans(X, initialCentroids, maxIters, K);
+    }
+
     /*RUNKMEANS runs the K-Means algorithm on data matrix X, where each row of X
     is a single example
     [centroids, idx] = RUNKMEANS(X, initial_centroids, max_iters, ...
@@ -64,7 +95,7 @@ public class KMeans
     learning happens. This is set to false by default. runkMeans returns 
     centroids, a Kxn matrix of the computed centroids and idx, a m x 1  
     vector of centroid assignments (i.e. each entry in range [1..K]) */
-    public DoubleMatrix runkMeans(DoubleMatrix X, DoubleMatrix initialCentroids, int maxIters, int K)
+    private DoubleMatrix runkMeans(DoubleMatrix X, DoubleMatrix initialCentroids, int maxIters, int K)
     {
         // Initialize Values
         int m = X.rows;
@@ -82,7 +113,7 @@ public class KMeans
             //Given the memberships, compute new centriods.
             centroids = computeCentroids(X, idx, K);
 
-            //System.out.println("Iteration " + (i + 1) + "/" + maxIters + ".");
+            System.out.println("Iteration " + (i + 1) + "/" + maxIters + ".");
         }
 
         finalIdx = idx; //This should work?
