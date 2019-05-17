@@ -2,9 +2,12 @@
 
 import java.lang.Math;
 import org.jblas.*;
+import java.util.*;
+import java.io.*;
 
 // Need to make sure that the jblas package is installed.
 // Compile with statement javac -cp '.:jblas-1.2.4.jar' kMeans.java
+// Run with statement java -cp '.:jblas-1.2.4.jar' kMeans file.txt
 
 public class kMeans
 {
@@ -23,7 +26,7 @@ public class kMeans
     of K-Means to execute. plot_progress is a true/false flag that 
     indicates if the function should also plot its progress as the 
     learning happens. This is set to false by default. runkMeans returns 
-    centroids, a Kxn matrix of the computed centroids and idx, a m x 1 
+    centroids, a Kxn matrix of the computed centroids and idx, a m x 1  
     vector of centroid assignments (i.e. each entry in range [1..K]) */
     public static DoubleMatrix runkMeans(DoubleMatrix X, DoubleMatrix initialCentroids, int maxIters, int K)
     {
@@ -42,6 +45,8 @@ public class kMeans
 
             //Given the memberships, compute new centriods.
             centroids = computeCentroids(X, idx, K);
+
+            System.out.println("Iteration " + (i + 1) + "/" + maxIters + ".");
         }
 
         return idx;
@@ -108,12 +113,14 @@ public class kMeans
 
             // Choose the weight to be the distance from the centroid closest to the
             // Current vertex
-            idx.put(i, zy.min());
+            idx.put(i, zy.argmin());
         }
 
         return idx;
     }
 
+
+    // Works perfectly fine afaik+
     public static DoubleMatrix initCentroids(DoubleMatrix X, int K)
     {
         // Get a random row to start as the first centroid.
@@ -123,7 +130,7 @@ public class kMeans
         // Initialize the very first row of the centroids.
         centroids.putRow(0, X.getRow(randidx));
         //Start this 0 for convenience's sake.
-        int centroidsComputed = 0;
+        int centroidsComputed = 1;
 
         while (centroidsComputed < K)
         {
@@ -153,10 +160,10 @@ public class kMeans
 
             // Choose the vertex furthest away from all the current centroids and add
             // it as the newest centroid.
-            double maxDist = weights.max();
+            double maxDist = weights.argmax();
             centroidsComputed++;
-            centroids.putRow(centroidsComputed, X.getRow((int)maxDist));
-            System.out.println("Centroid Calculated " + (centroidsComputed + 1));
+            centroids.putRow(centroidsComputed - 1, X.getRow((int)maxDist));
+            System.out.println("Centroid Calculated " + (centroidsComputed));
         }
         
         return centroids;
@@ -171,7 +178,7 @@ public class kMeans
         // Create the new adjacency matrix from ones and zeros.
         for (int i = 0; i < len; i++)
         {
-            for (int j = 0; j < adjMatrix[i].length; i++)
+            for (int j = 0; j < adjMatrix[i].length; j++)
             {
                 if (adjMatrix[i][j])
                     newAdjMatrix.put(i, j, 1.0);
@@ -181,21 +188,27 @@ public class kMeans
         return newAdjMatrix;
     }
     
-    public static void main(String[] args)
+    public static void main(String[] args) throws FileNotFoundException
     {
-        Graph inputGraph = new Graph();
+        File file = new File(args[0]);
+        Graph inputGraph = new Graph(file);
         boolean[][] adjMatrix = inputGraph.adjacencyMatrix;
         int numberOfVertices = inputGraph.getVertexCount();
         
         // Select an intial Set of centroids
         // K is the amount of centroids we want - sqrt fo the amount of vertices right now.
-        int K = (int)Math.sqrt(numberOfVertices);
+        int K = 4;
         // The maximum iterations of the kMeans clustering, set at this value for safety.
-        int maxIters = numberOfVertices / 10;
+        int maxIters = 20;
         // X represents the data that we are clustering, the adj matrix in this case.
         DoubleMatrix X = formAdjMatrix(adjMatrix);
         DoubleMatrix initialCentroids = initCentroids(X, K);
         System.out.println("Finished Initializing Centroids");
+
+        for (int i = 0; i < K; i++)
+        {
+            System.out.println(initialCentroids.getRow(i));
+        }
 
         // Find the closest centroids for each example using the initial centriods.
         DoubleMatrix idx = findClosestCentroids(X, initialCentroids, K);
