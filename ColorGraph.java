@@ -18,5 +18,8 @@ public class ColorGraph
         KMeans graphToColor = new KMeans(file);
 
         DoubleMatrix idx = graphToColor.runkMeans();
+
+        DoubleMatrix clusterCounts = graphToColor.countClusters();
+        System.out.println((clusterCounts));
     }
 }

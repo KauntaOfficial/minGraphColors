@@ -321,19 +321,16 @@ public class KMeans
         return newAdjMatrix;
     }
     
-    public void listGroups(int K, DoubleMatrix idx)
+    public DoubleMatrix countClusters()
     {
-        for (int k = 0; k < K; k++)
+        DoubleMatrix counts = DoubleMatrix.zeros(K);
+        // Gets the amount 
+        for (int i = 0; i < finalIdx.length; i++)
         {
-            System.out.print(k + " ");
-
-            for (int i = 0; i < idx.length; i++)
-            {
-                if ((int)idx.get(i) == k)
-                    System.out.print(i + " ");
-            }
-
-            System.out.println();
+            int currentCluster = (int)finalIdx.get(i);
+            counts.put(currentCluster, counts.get(currentCluster) + 1);
         }
+
+        return counts;
     }
 }
