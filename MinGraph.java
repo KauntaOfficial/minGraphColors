@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.lang.Math;
 import java.util.Collections;
 
-public class minGraph
+public class MinGraph
 {
     public static boolean colorTest(int[] colors, Graph g)
     {
