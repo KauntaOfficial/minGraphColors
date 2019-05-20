@@ -1,4 +1,4 @@
-// By Co. and Ivy Zhang
+// Joseph Seaton, Ivy Zhang, Neo Zhou, and Ben Chappell.
 
 import java.util.ArrayList;
 import java.lang.Math;
@@ -100,7 +100,7 @@ public class MinGraph
         }
         
         /* Random thingy ma bob runthroughs */
-        for (int timesToRun = 0; timesToRun < edgeCount/500; timesToRun++)
+        for (int timesToRun = 0; timesToRun < edgeCount/vertexCount; timesToRun++)
         {
             for (int node = 0; node < inputGraph.adjacencyList.length; node++)
             {
@@ -148,16 +148,19 @@ public class MinGraph
             }
         }
         
-        int limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length);
+        // Limiting number of colors
         
-        for(int timesToRun = 0; timesToRun < edgeCount/500; timesToRun++)
+        int limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
+        
+        for(int timesToRun = 0; timesToRun < edgeCount/vertexCount; timesToRun++)
         {
             for (int node = 0; node < inputGraph.adjacencyList.length; node++)
             {
+                ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
                 int[] vertexColors = new int[vertexCount];
                 ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
                 ArrayList<Integer> storedNodes = new ArrayList<Integer>();
-                boolean lastCheckNodeStored = false;
+                
                 
                 //Add integers that correspond to the nodes of a graph to an arraylist.
                 for (int i = 0; i < vertexCount; i++)
@@ -170,7 +173,37 @@ public class MinGraph
                 //Go through every vertex randomly.
                 for (int j = 0; j < vertexCount; j++)
                 {
-                    if 
+                    if (!storedNodes.isEmpty())
+                    {
+                        for (int i = 0; i < storedNodes.size(); i++)
+                        {
+                            int selectedElement = storedNodes.get(i);
+
+                            adjacentVertexColors = new ArrayList<Integer>();
+
+                            //Adding adjacent node colors to arraylist.
+                            for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
+                            {
+                                adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
+                            }
+
+                            //Initialize every element's color to 0.
+                            vertexColors[selectedElement] = 0;
+
+                            //If adjacent nodes have the same color as the current node, increment those colors by one.
+                            while (adjacentVertexColors.contains(vertexColors[selectedElement]))
+                            {
+                                vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
+
+                                if (vertexColors[selectedElement] > limitingColorCount)
+                                {
+                                    vertexColors[selectedElement] = 0;
+                                    break;
+                                }
+                            } 
+                        }
+                    }
+                    
                     int selectedElement = listOfVertices.get(j);
 
                     adjacentVertexColors = new ArrayList<Integer>();
@@ -189,11 +222,10 @@ public class MinGraph
                     {
                         vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
                         
-                        if (vertexColors[selectedElement] > limitingColorCount)
+                        if (vertexColors[selectedElement] > limitingColorCount - 1 && adjacentVertexColors.contains(0))
                         {
                             vertexColors[selectedElement] = 0;
                             storedNodes.add(selectedElement);
-                            lastCheckNodeStored = true;
                             break;
                         }
                     } 
@@ -203,6 +235,8 @@ public class MinGraph
                 {
                     //This array copy is good for large datasets.
                     System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
+                    System.out.println("Better!");
+                    limitingColorCount--;
                 }
             }
         }
