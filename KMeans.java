@@ -11,16 +11,16 @@ import java.io.*;
 
 public class KMeans
 {
-    private int K;
-    private int maxIters;
+    public int K;
+    public int maxIters;
     private Graph inputGraph;
     private boolean[][] adjMatrix;
     private int vertexCount;
     private File inputFile;
-    DoubleMatrix X;
-    DoubleMatrix initialCentroids;
-    DoubleMatrix initialIdx;
-    DoubleMatrix finalIdx; // I don't know if I want to keep this, see what happens with it.
+    public DoubleMatrix X;
+    private DoubleMatrix initialCentroids;
+    private DoubleMatrix initialIdx;
+    private DoubleMatrix finalIdx; 
 
     // Second constructor without default values. Allows explicit definition of K and MaxIters.
     public KMeans(String file, int K_, int maxIters_) throws FileNotFoundException
@@ -38,7 +38,7 @@ public class KMeans
         maxIters = maxIters_;
 
         //Create X from the adj matrix
-        X = formAdjMatrix(adjMatrix);
+        X = formDataMatrix(adjMatrix);
 
         // Get the initial centroids.
         initialCentroids = initCentroids(X, K);
@@ -57,15 +57,34 @@ public class KMeans
         vertexCount = inputGraph.getVertexCount();
 
         //K is the amount of centroids we want.
-        K = (int)Math.sqrt(vertexCount) + 1;
+        K = (int)Math.sqrt(vertexCount);
 
         // max iters the the maximum iterations of the algorithm.
         maxIters = vertexCount / 5;
 
         //Create X from the adj matrix
-        X = formAdjMatrix(adjMatrix);
+        X = formDataMatrix(adjMatrix);
 
         // Get the initial centroids.
+        initialCentroids = initCentroids(X, K);
+
+        // Get the initial idx values.
+        initialIdx = findClosestCentroids(X, initialCentroids, K);
+    }
+
+    // Works as long as data is in the same format as it would be after makin the adj matrix.
+    public KMeans(DoubleMatrix data)
+    {
+        // Initialize simple stuff
+        X = data;
+        vertexCount = X.getRows();
+
+        // K is the amount of centroids we want.
+        K = (int)Math.sqrt(vertexCount);
+
+        maxIters = vertexCount / 5;
+
+        // Initialize centroids
         initialCentroids = initCentroids(X, K);
 
         // Get the initial idx values.
@@ -98,8 +117,8 @@ public class KMeans
     private DoubleMatrix runkMeans(DoubleMatrix X, DoubleMatrix initialCentroids, int maxIters, int K)
     {
         // Initialize Values
-        int m = X.rows;
-        int n = X.columns;
+        int m = X.getRows();
+        int n = X.getColumns();
         DoubleMatrix centroids = initialCentroids;
         DoubleMatrix prevCentroids = centroids;
         DoubleMatrix idx = DoubleMatrix.zeros(m, 1);
@@ -133,8 +152,8 @@ public class KMeans
     {
         // Doesn't really matter which one is m and n, bc X is square, aka don't try to 
         // Generalize this because m and n might not be right and I don't care to check.
-        int m = X.rows;
-        int n = X.columns;
+        int m = X.getRows();
+        int n = X.getColumns();
         DoubleMatrix centroids = DoubleMatrix.zeros(K, n);
 
         // k is a double for easy comparison with stuff
@@ -302,7 +321,7 @@ public class KMeans
         return centroids;
     }
 
-    private DoubleMatrix formAdjMatrix(boolean[][] adjMatrix)
+    private DoubleMatrix formDataMatrix(boolean[][] adjMatrix)
     {   
         // Initialize the length and the new adj matrix.
         int len = adjMatrix.length;
@@ -332,5 +351,20 @@ public class KMeans
         }
 
         return counts;
+    }
+
+    public DoubleMatrix clustersGreaterThanAverage()
+    {
+        DoubleMatrix counts = countClusters();
+        int averageValue = vertexCount / K;
+
+        DoubleMatrix greaterThan = DoubleMatrix.zeros(K);
+        for (int i = 0; i < counts.length; i++)
+        {
+            if (counts.get(i) > (double)averageValue)
+                greaterThan.put(i, 1);
+        }
+
+        return greaterThan;
     }
 }
