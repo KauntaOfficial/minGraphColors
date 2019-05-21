@@ -273,7 +273,8 @@ public class KMeans
     // Works perfectly fine afaik+
     private DoubleMatrix initCentroids(DoubleMatrix X, int K)
     {
-        // Get a random row to start as the first centroid.
+        return weightedInitCentroids(X, K);
+        /* Get a random row to start as the first centroid.
         int randidx = (int)randomInt(0, X.rows);
         DoubleMatrix centroids = new DoubleMatrix(K, X.columns);
 
@@ -318,7 +319,7 @@ public class KMeans
             System.out.println("Centroid Calculated " + (centroidsComputed));
         }
         
-        return centroids;
+        return centroids; */
     }
 
     private DoubleMatrix formDataMatrix(boolean[][] adjMatrix)

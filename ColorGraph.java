@@ -3,9 +3,7 @@
 import java.lang.Math;
 import org.jblas.*;
 import java.util.*;
-
 import javax.lang.model.util.ElementScanner6;
-
 import java.io.*;
 
 // Need to make sure that the jblas package is installed.
@@ -26,19 +24,38 @@ public class ColorGraph
         int averageClusterSize = colorGraph.K / colorGraph.maxIters;
 
         DoubleMatrix greaterThanAverage = colorGraph.clustersGreaterThanAverage();
+        System.out.println(greaterThanAverage);
         int greaterThanAverageCount = (int)greaterThanAverage.sum();
 
         // Create a list of datasets to act as the new data to create more, smaller clusters.
         DoubleMatrix[] dataSets = new DoubleMatrix[colorGraph.K];
+        for (int i = 0; i < dataSets.length; i++)
+        {
+            dataSets[i] = DoubleMatrix.zeros(1, colorGraph.X.columns);
+        }
 
         // Get all of the data sets for all of the clusters, putting them into data sets.
         // Due to the way the data is stored, the lesser data points will be first, meaning that if vertex 2 is the first one in
         // cluter 5, dataSet[5].get(0) will be the data for vertex 2 (since the clusters start at 0). This is why going through the list in 
         // alphabetical order is very important, otherwise the data will be messed up.
         // As a result, remember to add a method to recreate a singular idx.
+
+        // This for loop is working correctly.
         for (int i = 0; i < idx.length; i++)
         {
-            dataSets[(int)idx.get(i)].putRow(dataSets[(int)idx.get(i)].rows, colorGraph.X.getRow(i));
+            System.out.println("Dataset " + i + " found.");
+            int groupAtLocation = (int)idx.get(1);
+            // Create a temporary matrix for this.
+            DoubleMatrix temp = dataSets[groupAtLocation].dup();
+            // Resize the data sets matrix for this group.
+            dataSets[groupAtLocation].resize(dataSets[groupAtLocation].rows + 1, dataSets[groupAtLocation].columns);
+
+            for (int j = 0; j < temp.rows; j++)
+            {
+                dataSets[groupAtLocation].putRow(j, temp.getRow(j));
+            }
+
+            dataSets[groupAtLocation].putRow(dataSets[groupAtLocation].rows - 1, colorGraph.X.getRow(i));
         }
 
         //Create a list to store each of the resultant idxs, for later assimilation
