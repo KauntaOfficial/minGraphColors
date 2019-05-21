@@ -179,9 +179,9 @@ public class KMeans
     // Need better variable names for z and zy
     private DoubleMatrix findClosestCentroids(DoubleMatrix X, DoubleMatrix initCentroids, int K)
     {
-        DoubleMatrix idx = DoubleMatrix.zeros(X.columns, 1);
+        DoubleMatrix idx = DoubleMatrix.zeros(X.rows, 1);
 
-        for (int i = 0; i < X.columns; i++)
+        for (int i = 0; i < X.rows; i++)
         {
             // Compute the distance between the row of X and each of the centroids.
             DoubleMatrix z = initCentroids.subRowVector(X.getRow(i));

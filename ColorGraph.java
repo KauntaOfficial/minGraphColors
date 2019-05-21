@@ -61,12 +61,16 @@ public class ColorGraph
         //Create a list to store each of the resultant idxs, for later assimilation
         DoubleMatrix[] identities = new DoubleMatrix[greaterThanAverageCount];
 
-        for (int i = 0; i < greaterThanAverage.length; i++)
+        for (int i = 0; i < greaterThanAverageCount; i++)
         {
-            identities[i] = recluster(averageClusterSize, dataSets[(int)greaterThanAverage.get(i)]);
+            identities[i] = recluster(averageClusterSize, dataSets[(int)greaterThanAverage.get(i)]).dup();
         }
         // Now that it's reclutered once, i have to do it recursively until all of them are below the average.
         // Actually, reassimilate first, and then recluster. Should be easier.
+
+        //////// WORKS UP TO HERE //////////
+
+        DoubleMatrix newIdx = assimilate(identities, idx.length, greaterThanAverage, clusterCount, idx).dup();
     }
 
     public static DoubleMatrix recluster(int avg, DoubleMatrix data)
