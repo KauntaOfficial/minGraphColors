@@ -71,23 +71,32 @@ public class ColorGraph
             if (greaterThanAverage.get(group) == 1.0)
             {
                 // Get the reclustered group list, using the identity tracker to find the right set of identities.
-                DoubleMatrix[] reclusteredGroupList = convertToGroupBasedLists(identities[idenTracker], identities[idenTracker].max() + 1);
+                DoubleMatrix[] reclusteredGroupList = convertToGroupBasedLists(identities[idenTracker], (int)identities[idenTracker].max() + 1);
 
-                // Go through each of the vertices in the group, and set their group to the sum of their current group, the active cluster count, 
+                // Go through each of the vertices in the group, and set their new cluster to: the sum of their current group, the active cluster count, 
                 // and the subcluster.
                 // Main Cluster is located at idx[vertex number]
                 // Active cluster count is cluster count
                 // Subcluster number located at the group list that has the vertex in it.
-                int subNumber;
-                for (int subGroup = 0; subGroup < reclusteredGroupList.length; subGroup++)
+                // Need to find the node I am looking for?
+                for (int i = 0; i < groupLists[group].length; i++)
                 {
-                    if (bSearch(reclusteredGroupList[subGroup], reclusteredGroupList[subGroup].length, target))
+                    int subNumber = 0;
+                    for (int subGroup = 0; subGroup < reclusteredGroupList.length; subGroup++)
                     {
-                        
+                        if (bSearch(reclusteredGroupList[subGroup], reclusteredGroupList[subGroup].length, groupLists[group].get(i)))
+                        {
+                            subNumber = subGroup;
+                            break;
+                        }
                     }
+
+                    idx.put(i, mainIdx.get(i) + clusterCount + subNumber);
                 }
             }
         }
+
+        return idx;
     }
 
     public static DoubleMatrix[] convertToGroupBasedLists(DoubleMatrix idx, int K)
@@ -96,7 +105,7 @@ public class ColorGraph
 
         for (int i = 0; i < idx.length; i++)
         {
-            groupLists[idx.get(i)].put(groupLists[idx.get(i)].length, i);
+            groupLists[(int)idx.get(i)].put(groupLists[(int)idx.get(i)].length, i);
         }
 
         return groupLists;
