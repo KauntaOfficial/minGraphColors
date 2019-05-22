@@ -33,13 +33,13 @@ public class ColorGraph
         while (clusterSizes.max() >= averageClusterSize && iterations <= reclusterCap)
         {
             // Create the new Identification matrix using the recluster and assimilate algorithm.
-            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, clusterCount);
+            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, clusterCount).dup();
 
             // Update the amount of clusters we have.
             clusterCount = (int)newIdx.max() + 1;
 
             // Get the sizes of all of the clusters, so that we know when to stop.
-            clusterSizes = countClusters(clusterCount, newIdx);
+            clusterSizes = countClusters(clusterCount, newIdx).dup();
             iterations++;
             System.out.println(newIdx);
             System.out.println(clusterSizes);
@@ -54,8 +54,12 @@ public class ColorGraph
     }
 
     public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount) 
-       {
+    {
+        /// Anything Bounded by this is not working and must be fixed to work with repeat iterations ///
         DoubleMatrix greaterThanAverage = colorGraph.clustersGreaterThanAverage();
+        /// End of Bound /// I think
+
+
         // // // System.out.println(greaterThanAverage);
         int greaterThanAverageCount = (int)greaterThanAverage.sum();
         // // System.out.println(greaterThanAverageCount);
