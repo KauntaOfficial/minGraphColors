@@ -57,7 +57,7 @@ public class KMeans
         vertexCount = inputGraph.getVertexCount();
 
         //K is the amount of centroids we want.
-        K = (int)Math.sqrt(vertexCount);
+        K = (int)Math.sqrt(vertexCount) * 2;
 
         // max iters the the maximum iterations of the algorithm.
         maxIters = vertexCount / 5;
@@ -80,7 +80,7 @@ public class KMeans
         vertexCount = X.getRows();
 
         // K is the amount of centroids we want.
-        K = (int)Math.sqrt(vertexCount);
+        K = (int)Math.sqrt(vertexCount) * 2;
 
         maxIters = vertexCount / 5;
 

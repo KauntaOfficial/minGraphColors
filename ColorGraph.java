@@ -30,26 +30,27 @@ public class ColorGraph
         int iterations = 0;
 
         // Continually recluster until all of the clusters are smaller than the average size, aka the square root of the amount of vertices.
-        while (clusterSizes.max() >= averageClusterSize && iterations <= reclusterCap)
-        {
+        //while (clusterSizes.max() >= averageClusterSize && iterations <= reclusterCap)
+        //{
             // Create the new Identification matrix using the recluster and assimilate algorithm.
-            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, clusterCount).dup();
+        newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, clusterCount);
+        //newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, (int)newIdx.max() + 1);
 
             // Update the amount of clusters we have.
-            clusterCount = (int)newIdx.max() + 1;
+        //    clusterCount = (int)newIdx.max() + 1;
 
             // Get the sizes of all of the clusters, so that we know when to stop.
-            clusterSizes = countClusters(clusterCount, newIdx).dup();
-            iterations++;
-            System.out.println(newIdx);
-            System.out.println(clusterSizes);
-            System.out.println();
-        } 
+          //  clusterSizes = countClusters(clusterCount, newIdx);
+            //iterations++;
+            //System.out.println(newIdx);
+            //System.out.println(clusterSizes);
+            //System.out.println();
+        //} 
 
         DoubleMatrix groupSizes = DoubleMatrix.zeros((int)newIdx.max() + 1);
         for (int i = 0; i < newIdx.length; i++)
         {
-            groupSizes.put((int)newIdx.get(i), groupSizes.get((int)newIdx.get(i)) + 1);
+            System.out.println(newIdx.get(i));
         }
     }
 
