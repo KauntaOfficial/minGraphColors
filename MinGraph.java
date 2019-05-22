@@ -1,5 +1,6 @@
 // Joseph Seaton, Ivy Zhang, Neo Zhou, and Ben Chappell.
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.lang.Math;
 import java.util.Collections;
@@ -197,6 +198,72 @@ public class MinGraph
         
         /* ------------------------------------------------------------------------------------------------------------------------------------------------*/
         
+        /* Djikstra's Algorithm but backwards AKA Ivy's Algorithm */
+        int[][] nodeDegrees = new int[vertexCount][2];
+        
+        // Add the degrees to the array
+        for (int i = 0; i < vertexCount; i++)
+        {
+            // {vertex, degree}
+            int[] nodeStorage = {i, 0};
+            for (int adjacentNodes = 0; adjacentNodes < inputGraph.adjacencyList[i].length; adjacentNodes++)
+            {
+                nodeStorage[1]++;
+            }
+            
+            nodeDegrees[i] = nodeStorage;
+        }
+        
+        // Bubble sort in order of the degrees
+        int[] temp = {0, 0};
+        int n = nodeDegrees.length;
+        
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 1; j < (n - i); j++)
+            {
+                 if(nodeDegrees[j-1][1] > nodeDegrees[j][1])
+                 {
+                      temp = nodeDegrees[j-1];  
+                      nodeDegrees[j-1] = nodeDegrees[j];  
+                      nodeDegrees[j] = temp;  
+                 }
+            }
+        }   
+        
+        int[] vertexColors = new int[vertexCount];
+        Arrays.fill(vertexColors, -1);
+            
+        //Iterate through every node in the adjacencyList.
+        for (int counter = nodeDegrees.length; counter <= 0; counter--)
+        {
+            //Create an arraylist to store vertex colors
+            ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
+
+            //Add adjacent node colors into the arraylist.
+            for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[counter].length; adjacentNode++)
+            {
+                adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[nodeDegrees[counter][0]][adjacentNode]]);
+                /* adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[i][adjacentNode]]);*/
+            }
+
+            //Initialize every element's color to 0.
+            vertexColors[counter] = 0;
+
+            //If adjacent nodes have the same color as the current node, increment those colors by one.
+            while (adjacentVertexColors.contains(vertexColors[counter]))
+            {
+                vertexColors[counter] = vertexColors[counter] + 1;
+            }     
+        }
+        
+        /*if (countDistinct(vertexColors, vertexColors.length) <= countDistinct(optimumVertexColors, optimumVertexColors.length))
+        {
+            //This array copy is good for large datasets.
+            System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
+
+        }*/
+                 
         //Display results.
         
         for(int color: optimumVertexColors)
