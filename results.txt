@@ -1,69 +1,37 @@
-Centroid Calculated 2
-Centroid Calculated 3
-Centroid Calculated 4
-Centroid Calculated 5
-Centroid Calculated 6
-Centroid Calculated 7
-Centroid Calculated 8
-Centroid Calculated 9
-Centroid Calculated 10
-Centroid Calculated 11
-Iteration 1/25.
-Iteration 2/25.
-Iteration 3/25.
-Iteration 4/25.
-Iteration 5/25.
-Iteration 6/25.
-Iteration 7/25.
-Iteration 8/25.
-Iteration 9/25.
-Iteration 10/25.
-Iteration 11/25.
-Iteration 12/25.
-Iteration 13/25.
-Iteration 14/25.
-Iteration 15/25.
-Iteration 16/25.
-Iteration 17/25.
-Iteration 18/25.
-Iteration 19/25.
-Iteration 20/25.
-Iteration 21/25.
-Iteration 22/25.
-Iteration 23/25.
-Iteration 24/25.
-Iteration 25/25.
-[1.000000; 0.000000; 0.000000; 0.000000; 1.000000; 1.000000; 0.000000; 0.000000; 0.000000; 0.000000; 0.000000]
-3
-Centroid Calculated 2
-Centroid Calculated 3
-Centroid Calculated 4
-Centroid Calculated 5
-Iteration 1/7.
-Iteration 2/7.
-Iteration 3/7.
-Iteration 4/7.
-Iteration 5/7.
-Iteration 6/7.
-Iteration 7/7.
-Centroid Calculated 2
-Centroid Calculated 3
-Centroid Calculated 4
-Centroid Calculated 5
-Iteration 1/5.
-Iteration 2/5.
-Iteration 3/5.
-Iteration 4/5.
-Iteration 5/5.
-Centroid Calculated 2
-Centroid Calculated 3
-Centroid Calculated 4
-Centroid Calculated 5
-Centroid Calculated 6
-Iteration 1/7.
-Iteration 2/7.
-Iteration 3/7.
-Iteration 4/7.
-Iteration 5/7.
-Iteration 6/7.
-Iteration 7/7.
+7.0
+9.0
+13.0
+11.0
+11.0
+12.0
+8.0
+9.0
+10.0
+9.0
+8.0
+9.0
+7.0
+7.0
+7.0
+7.0
+7.0
+2.0
+0.0
+0.0
+1.0
+1.0
+1.0
+1.0
+2.0
+2.0
+2.0
+0.0
+2.0
+0.0
+3.0
+0.0
+3.0
+0.0
+4.0
+4.0
+4.0
