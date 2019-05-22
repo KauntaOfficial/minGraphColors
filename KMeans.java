@@ -132,7 +132,7 @@ public class KMeans
             //Given the memberships, compute new centriods.
             centroids = computeCentroids(X, idx, K);
 
-            System.out.println("Iteration " + (i + 1) + "/" + maxIters + ".");
+            // System.out.println("Iteration " + (i + 1) + "/" + maxIters + ".");
         }
 
         finalIdx = idx; //This should work?
@@ -264,7 +264,7 @@ public class KMeans
 
             centroidsComputed++;
             centroids.putRow(centroidsComputed - 1, X.getRow(newCentroid));
-            System.out.println("Centroid Calculated " + (centroidsComputed));
+            // System.out.println("Centroid Calculated " + (centroidsComputed));
         }
         
         return centroids;

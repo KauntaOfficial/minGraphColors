@@ -24,9 +24,9 @@ public class ColorGraph
         int averageClusterSize = colorGraph.K / colorGraph.maxIters;
 
         DoubleMatrix greaterThanAverage = colorGraph.clustersGreaterThanAverage();
-        System.out.println(greaterThanAverage);
+        // // // System.out.println(greaterThanAverage);
         int greaterThanAverageCount = (int)greaterThanAverage.sum();
-        System.out.println(greaterThanAverageCount);
+        // // System.out.println(greaterThanAverageCount);
 
         // Create a list of datasets to act as the new data to create more, smaller clusters.
         DoubleMatrix[] dataSets = new DoubleMatrix[colorGraph.K];
@@ -44,7 +44,7 @@ public class ColorGraph
         // This for loop is working correctly.
         for (int i = 0; i < idx.length; i++)
         {
-            //System.out.println("Dataset " + i + " found.");
+            //// // System.out.println("Dataset " + i + " found.");
             int groupAtLocation = (int)idx.get(i);
             // Create a temporary matrix for this.
             DoubleMatrix temp = dataSets[groupAtLocation].dup();
@@ -75,6 +75,11 @@ public class ColorGraph
         //////// WORKS UP TO HERE //////////
 
         DoubleMatrix newIdx = assimilate(identities, idx.length, greaterThanAverage, clusterCount, idx).dup();
+
+        for (int i = 0; i < newIdx.length; i++)
+        {
+            System.out.println(newIdx.get(i));
+        }
     }
 
     public static DoubleMatrix recluster(int avg, DoubleMatrix data)
