@@ -56,7 +56,7 @@ public class ColorGraph
     public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount) 
     {
         /// Anything Bounded by this is not working and must be fixed to work with repeat iterations ///
-        DoubleMatrix greaterThanAverage = colorGraph.clustersGreaterThanAverage();
+        DoubleMatrix greaterThanAverage = clustersGreaterThanAverage(clusterCount, idx.length, idx);
         /// End of Bound /// I think
 
 
