@@ -26,6 +26,7 @@ public class ColorGraph
         DoubleMatrix greaterThanAverage = colorGraph.clustersGreaterThanAverage();
         System.out.println(greaterThanAverage);
         int greaterThanAverageCount = (int)greaterThanAverage.sum();
+        System.out.println(greaterThanAverageCount);
 
         // Create a list of datasets to act as the new data to create more, smaller clusters.
         DoubleMatrix[] dataSets = new DoubleMatrix[colorGraph.K];
@@ -43,8 +44,8 @@ public class ColorGraph
         // This for loop is working correctly.
         for (int i = 0; i < idx.length; i++)
         {
-            System.out.println("Dataset " + i + " found.");
-            int groupAtLocation = (int)idx.get(1);
+            //System.out.println("Dataset " + i + " found.");
+            int groupAtLocation = (int)idx.get(i);
             // Create a temporary matrix for this.
             DoubleMatrix temp = dataSets[groupAtLocation].dup();
             // Resize the data sets matrix for this group.
@@ -61,9 +62,12 @@ public class ColorGraph
         //Create a list to store each of the resultant idxs, for later assimilation
         DoubleMatrix[] identities = new DoubleMatrix[greaterThanAverageCount];
 
-        for (int i = 0; i < greaterThanAverageCount; i++)
+        // Need to make it so that it only puts in the right ones into the right identities slots.
+        int idenTracker = 0;
+        for (int i = 0; i < greaterThanAverage.length; i++)
         {
-            identities[i] = recluster(averageClusterSize, dataSets[(int)greaterThanAverage.get(i)]).dup();
+            if (greaterThanAverage.get(i) == 1.0)
+                identities[idenTracker] = recluster(averageClusterSize, dataSets[i]).dup(); //Something wrong with the second half of this, with the gettin gof the stuff from greater than average.
         }
         // Now that it's reclutered once, i have to do it recursively until all of them are below the average.
         // Actually, reassimilate first, and then recluster. Should be easier.
@@ -120,13 +124,31 @@ public class ColorGraph
         return idx;
     }
 
+    // Like the loop that groups the data, but instead creates groups of 
     public static DoubleMatrix[] convertToGroupBasedLists(DoubleMatrix idx, int K)
     {
+        // Create a list of the groups to store everything.
         DoubleMatrix[] groupLists = new DoubleMatrix[K];
+        for (int i = 0; i < groupLists.length; i++)
+        {
+            groupLists[i] = DoubleMatrix.zeros(1);
+        }
 
         for (int i = 0; i < idx.length; i++)
         {
-            groupLists[(int)idx.get(i)].put(groupLists[(int)idx.get(i)].length, i);
+            // Get the group this particular vertex is in.
+            int groupAtLocation = (int)idx.get(i);
+            // Create a temporary matrix for this.
+            DoubleMatrix temp = groupLists[groupAtLocation].dup();
+            // Resize the group matrix for this group.
+            groupLists[groupAtLocation].resize(groupLists[groupAtLocation].rows + 1, 1);
+
+            for (int j = 0; j < temp.rows; j++)
+            {
+                groupLists[groupAtLocation].put(j, temp.get(j));
+            }
+
+            groupLists[groupAtLocation].put(groupLists[groupAtLocation].rows - 1, i);
         }
 
         return groupLists;

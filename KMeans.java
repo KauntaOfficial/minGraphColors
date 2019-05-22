@@ -222,7 +222,7 @@ public class KMeans
         {
             DoubleMatrix weights = DoubleMatrix.zeros(X.columns, 1);
 
-            for (int i = 0; i < X.columns; i++)
+            for (int i = 0; i < X.rows; i++)
             {
                 // Compute the distance between the row of X and each of the centroids.
                 DoubleMatrix z = centroids.subRowVector(X.getRow(i));
@@ -274,8 +274,8 @@ public class KMeans
     private DoubleMatrix initCentroids(DoubleMatrix X, int K)
     {
         return weightedInitCentroids(X, K);
-        /* Get a random row to start as the first centroid.
-        int randidx = (int)randomInt(0, X.rows);
+        // Get a random row to start as the first centroid.
+        /*int randidx = (int)randomInt(0, X.rows);
         DoubleMatrix centroids = new DoubleMatrix(K, X.columns);
 
         // Initialize the very first row of the centroids.
@@ -287,7 +287,7 @@ public class KMeans
         {
             DoubleMatrix weights = DoubleMatrix.zeros(X.columns, 1);
 
-            for (int i = 0; i < X.columns; i++)
+            for (int i = 0; i < X.rows; i++)
             {
                 // Compute the distance between the row of X and each of the centroids.
                 DoubleMatrix z = centroids.subRowVector(X.getRow(i));
@@ -319,7 +319,7 @@ public class KMeans
             System.out.println("Centroid Calculated " + (centroidsComputed));
         }
         
-        return centroids; */
+        return centroids;  */
     }
 
     private DoubleMatrix formDataMatrix(boolean[][] adjMatrix)
