@@ -15,7 +15,7 @@ public class KMeans
     public int maxIters;
     private Graph inputGraph;
     private boolean[][] adjMatrix;
-    private int vertexCount;
+    public int vertexCount;
     private File inputFile;
     public DoubleMatrix X;
     private DoubleMatrix initialCentroids;

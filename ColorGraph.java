@@ -21,15 +21,47 @@ public class ColorGraph
         DoubleMatrix idx = colorGraph.runkMeans();
         int clusterCount = colorGraph.K;
 
-        int averageClusterSize = colorGraph.K / colorGraph.maxIters;
+        int averageClusterSize = colorGraph.vertexCount / colorGraph.K;
 
+        // Duplicated idx for easy use since I want to save the original idx at least for now.
+        DoubleMatrix newIdx = idx.dup();
+        DoubleMatrix clusterSizes = countClusters(clusterCount, newIdx);
+        int reclusterCap = 2;
+        int iterations = 0;
+
+        // Continually recluster until all of the clusters are smaller than the average size, aka the square root of the amount of vertices.
+        while (clusterSizes.max() >= averageClusterSize && iterations <= reclusterCap)
+        {
+            // Create the new Identification matrix using the recluster and assimilate algorithm.
+            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, clusterCount);
+
+            // Update the amount of clusters we have.
+            clusterCount = (int)newIdx.max() + 1;
+
+            // Get the sizes of all of the clusters, so that we know when to stop.
+            clusterSizes = countClusters(clusterCount, newIdx);
+            iterations++;
+            System.out.println(newIdx);
+            System.out.println(clusterSizes);
+            System.out.println();
+        } 
+
+        DoubleMatrix groupSizes = DoubleMatrix.zeros((int)newIdx.max() + 1);
+        for (int i = 0; i < newIdx.length; i++)
+        {
+            groupSizes.put((int)newIdx.get(i), groupSizes.get((int)newIdx.get(i)) + 1);
+        }
+    }
+
+    public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount) 
+       {
         DoubleMatrix greaterThanAverage = colorGraph.clustersGreaterThanAverage();
         // // // System.out.println(greaterThanAverage);
         int greaterThanAverageCount = (int)greaterThanAverage.sum();
         // // System.out.println(greaterThanAverageCount);
 
         // Create a list of datasets to act as the new data to create more, smaller clusters.
-        DoubleMatrix[] dataSets = new DoubleMatrix[colorGraph.K];
+        DoubleMatrix[] dataSets = new DoubleMatrix[clusterCount];
         for (int i = 0; i < dataSets.length; i++)
         {
             dataSets[i] = DoubleMatrix.zeros(1, colorGraph.X.columns);
@@ -67,19 +99,14 @@ public class ColorGraph
         for (int i = 0; i < greaterThanAverage.length; i++)
         {
             if (greaterThanAverage.get(i) == 1.0)
-                identities[idenTracker] = recluster(averageClusterSize, dataSets[i]).dup(); //Something wrong with the second half of this, with the gettin gof the stuff from greater than average.
+                identities[idenTracker] = recluster(averageClusterSize, dataSets[i]).dup();
         }
         // Now that it's reclutered once, i have to do it recursively until all of them are below the average.
         // Actually, reassimilate first, and then recluster. Should be easier.
 
-        //////// WORKS UP TO HERE //////////
-
         DoubleMatrix newIdx = assimilate(identities, idx.length, greaterThanAverage, clusterCount, idx).dup();
 
-        for (int i = 0; i < newIdx.length; i++)
-        {
-            System.out.println(newIdx.get(i));
-        }
+        return newIdx;
     }
 
     public static DoubleMatrix recluster(int avg, DoubleMatrix data)
@@ -120,9 +147,9 @@ public class ColorGraph
                             break;
                         }
                     }
-
-                    idx.put(i, mainIdx.get(i) + clusterCount + subNumber);
+                    idx.put((int)groupLists[group].get(i), clusterCount + subNumber);
                 }
+                clusterCount += reclusteredGroupList.length;
             }
         }
 
@@ -184,5 +211,33 @@ public class ColorGraph
         }
 
         return false;
+    }
+
+    public static DoubleMatrix clustersGreaterThanAverage(int K, int vertexCount, DoubleMatrix idx)
+    {
+        DoubleMatrix counts = countClusters(K, idx);
+        int averageValue = vertexCount / K;
+
+        DoubleMatrix greaterThan = DoubleMatrix.zeros(K);
+        for (int i = 0; i < counts.length; i++)
+        {
+            if (counts.get(i) > (double)averageValue)
+                greaterThan.put(i, 1);
+        }
+
+        return greaterThan;
+    }
+
+    public static DoubleMatrix countClusters(int K, DoubleMatrix idx)
+    {
+        DoubleMatrix counts = DoubleMatrix.zeros(K);
+        // Gets the amount 
+        for (int i = 0; i < idx.length; i++)
+        {
+            int currentCluster = (int)idx.get(i);
+            counts.put(currentCluster, counts.get(currentCluster) + 1);
+        }
+
+        return counts;
     }
 }
