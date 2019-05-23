@@ -26,27 +26,17 @@ public class ColorGraph
         // Duplicated idx for easy use since I want to save the original idx at least for now.
         DoubleMatrix newIdx = idx.dup();
         DoubleMatrix clusterSizes = countClusters(clusterCount, newIdx);
-        int reclusterCap = 2;
-        int iterations = 0;
+        int reclusterCap = colorGraph.K / 4;
+        int newClusterCount = clusterCount;
 
         // Continually recluster until all of the clusters are smaller than the average size, aka the square root of the amount of vertices.
-        //while (clusterSizes.max() >= averageClusterSize && iterations <= reclusterCap)
-        //{
-            // Create the new Identification matrix using the recluster and assimilate algorithm.
-        newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, clusterCount);
-        int newClusterCount = (int)newIdx.max();
-        //newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, (int)newIdx.max() + 1);
-
-            // Update the amount of clusters we have.
-        //    clusterCount = (int)newIdx.max() + 1;
-
-            // Get the sizes of all of the clusters, so that we know when to stop.
-          //  clusterSizes = countClusters(clusterCount, newIdx);
-            //iterations++;
-            //System.out.println(newIdx);
-            //System.out.println(clusterSizes);
-            //System.out.println();
-        //} 
+        
+        // Create the new Identification matrix using the recluster and assimilate algorithm.
+        for (int i = 0; i < reclusterCap; i++)
+        {
+            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount);
+            newClusterCount = (int)newIdx.max() + 1;
+        }
 
         DoubleMatrix idxLists[] = convertToGroupBasedLists(idx, clusterCount + 1);
         DoubleMatrix newIdxLists[] = convertToGroupBasedLists(newIdx, newClusterCount + 1);
@@ -57,24 +47,25 @@ public class ColorGraph
             System.out.println(newIdx.get(i));
         }*/
 
-        for (int i = 0; i < idxLists.length; i++)
+        /*for (int i = 0; i < idxLists.length; i++)
         {
             for (int j = 0; j < idxLists[i].length; j++)
             {
-                System.out.print(idxLists[i].get(j) + " ");
+                System.out.print((int)idxLists[i].get(j) + " ");
             }
             System.out.println();
         }
 
-        System.out.println();
+        System.out.println(" First one finished "); */
 
         for (int i = 0; i < newIdxLists.length; i++)
         {
             for (int j = 0; j < newIdxLists[i].length; j++)
             {
-                System.out.print(newIdxLists[i].get(j) + " ");
+                System.out.print((int)newIdxLists[i].get(j) + " ");
             }
-            System.out.println();
+            if (newIdxLists[i].length > 0)
+                System.out.println();
         }
     }
 
@@ -192,7 +183,7 @@ public class ColorGraph
         DoubleMatrix[] groupLists = new DoubleMatrix[K];
         for (int i = 0; i < groupLists.length; i++)
         {
-            groupLists[i] = DoubleMatrix.zeros(1);
+            groupLists[i] = DoubleMatrix.zeros(0);
         }
 
         for (int i = 0; i < idx.length; i++)
