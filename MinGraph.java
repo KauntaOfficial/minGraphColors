@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.lang.Math;
 import java.util.Collections;
 
-public class MinGraph
+public class MinGraph1
 {
     public static boolean colorTest(int[] colors, Graph g)
     {
@@ -235,36 +235,39 @@ public class MinGraph
         Arrays.fill(vertexColors, -1);
             
         //Iterate through every node in the adjacencyList.
-        for (int counter = nodeDegrees.length; counter <= 0; counter--)
+        for (int counter = nodeDegrees.length - 1; counter >= 0; counter--)
         {
             //Create an arraylist to store vertex colors
             ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
 
             //Add adjacent node colors into the arraylist.
-            for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[counter].length; adjacentNode++)
+            for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[nodeDegrees[counter][0]].length; adjacentNode++)
             {
                 adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[nodeDegrees[counter][0]][adjacentNode]]);
                 /* adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[i][adjacentNode]]);*/
             }
 
             //Initialize every element's color to 0.
-            vertexColors[counter] = 0;
+            vertexColors[nodeDegrees[counter][0]] = 0;
 
             //If adjacent nodes have the same color as the current node, increment those colors by one.
-            while (adjacentVertexColors.contains(vertexColors[counter]))
+            while (adjacentVertexColors.contains(vertexColors[nodeDegrees[counter][0]]))
             {
-                vertexColors[counter] = vertexColors[counter] + 1;
-            }     
+                vertexColors[nodeDegrees[counter][0]] = vertexColors[nodeDegrees[counter][0]] + 1;
+            }
         }
         
-        /*if (countDistinct(vertexColors, vertexColors.length) <= countDistinct(optimumVertexColors, optimumVertexColors.length))
+        if (countDistinct(vertexColors, vertexColors.length) <= countDistinct(optimumVertexColors, optimumVertexColors.length))
         {
             //This array copy is good for large datasets.
             System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
 
-        }*/
-                 
-        //Display results.
+        }
+        
+        if (colorTest(optimumVertexColors, inputGraph))
+            System.out.println("Success!");
+            
+        System.out.println(countDistinct(optimumVertexColors, optimumVertexColors.length));
         
         for(int color: optimumVertexColors)
             System.out.print(color + " ");                     
