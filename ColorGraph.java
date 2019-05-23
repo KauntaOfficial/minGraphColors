@@ -26,7 +26,7 @@ public class ColorGraph
         // Duplicated idx for easy use since I want to save the original idx at least for now.
         DoubleMatrix newIdx = idx.dup();
         DoubleMatrix clusterSizes = countClusters(clusterCount, newIdx);
-        int reclusterCap = colorGraph.K / 4;
+        int reclusterCap = colorGraph.K / 5;
         int newClusterCount = clusterCount;
 
         // Continually recluster until all of the clusters are smaller than the average size, aka the square root of the amount of vertices.
