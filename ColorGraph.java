@@ -34,6 +34,7 @@ public class ColorGraph
         //{
             // Create the new Identification matrix using the recluster and assimilate algorithm.
         newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, clusterCount);
+        int newClusterCount = (int)newIdx.max();
         //newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, (int)newIdx.max() + 1);
 
             // Update the amount of clusters we have.
@@ -47,10 +48,33 @@ public class ColorGraph
             //System.out.println();
         //} 
 
-        DoubleMatrix groupSizes = DoubleMatrix.zeros((int)newIdx.max() + 1);
+        DoubleMatrix idxLists[] = convertToGroupBasedLists(idx, clusterCount + 1);
+        DoubleMatrix newIdxLists[] = convertToGroupBasedLists(newIdx, newClusterCount + 1);
+
+        /*DoubleMatrix groupSizes = DoubleMatrix.zeros((int)newIdx.max() + 1);
         for (int i = 0; i < newIdx.length; i++)
         {
             System.out.println(newIdx.get(i));
+        }*/
+
+        for (int i = 0; i < idxLists.length; i++)
+        {
+            for (int j = 0; j < idxLists[i].length; j++)
+            {
+                System.out.print(idxLists[i].get(j) + " ");
+            }
+            System.out.println();
+        }
+
+        System.out.println();
+
+        for (int i = 0; i < newIdxLists.length; i++)
+        {
+            for (int j = 0; j < newIdxLists[i].length; j++)
+            {
+                System.out.print(newIdxLists[i].get(j) + " ");
+            }
+            System.out.println();
         }
     }
 
