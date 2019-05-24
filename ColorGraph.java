@@ -19,14 +19,29 @@ public class ColorGraph
         int clusterCount = input.nextInt();
         input.nextLine();
 
+        ArrayList<ArrayList<Integer>> clusters = new ArrayList<ArrayList<Integer>>(clusterCount);
+        for (int i = 0; i < clusterCount; i++)
+        {
+            clusters.add(new ArrayList<Integer>());
+        }
+
         int[] clusterSizes = new int[clusterCount];
-        while(input.hasNextLine())
+
+        int clusterTracker = 0;
+        while (input.hasNextLine())
         {
             Scanner line = new Scanner(input.nextLine());
-            while(line.hasNextInt())
+
+            while (line.hasNextInt())
             {
-                int v = line.nextInt();
+                clusters.get(clusterTracker).add(line.nextInt());
+                clusterSizes[clusterTracker]++;
             }
+            clusterTracker++;
+            line.close();
         }
+        input.close();
+
+        
     }
 }
