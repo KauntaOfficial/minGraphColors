@@ -41,6 +41,14 @@ public class ClusterGraph
         DoubleMatrix idxLists[] = convertToGroupBasedLists(idx, clusterCount + 1);
         DoubleMatrix newIdxLists[] = convertToGroupBasedLists(newIdx, newClusterCount + 1);
 
+        int nonZeroClusterCount = 0;
+        for (int i = 0; i < newIdxLists.length; i++)
+        {
+            if (newIdxLists[i].length > 0)
+                nonZeroClusterCount++;
+        }
+
+        System.out.println(nonZeroClusterCount);
         for (int i = 0; i < newIdxLists.length; i++)
         {
             for (int j = 0; j < newIdxLists[i].length; j++)
