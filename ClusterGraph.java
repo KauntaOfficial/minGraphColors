@@ -10,7 +10,7 @@ import java.io.*;
 // Compile with statement javac -cp '.:jblas-1.2.4.jar' kMeans.java
 // Run with statement java -cp '.:jblas-1.2.4.jar' kMeans file.txt
 
-public class ColorGraph
+public class ClusterGraph
 {
     public static void main(String[] args) throws FileNotFoundException
     {
@@ -40,23 +40,6 @@ public class ColorGraph
 
         DoubleMatrix idxLists[] = convertToGroupBasedLists(idx, clusterCount + 1);
         DoubleMatrix newIdxLists[] = convertToGroupBasedLists(newIdx, newClusterCount + 1);
-
-        /*DoubleMatrix groupSizes = DoubleMatrix.zeros((int)newIdx.max() + 1);
-        for (int i = 0; i < newIdx.length; i++)
-        {
-            System.out.println(newIdx.get(i));
-        }*/
-
-        /*for (int i = 0; i < idxLists.length; i++)
-        {
-            for (int j = 0; j < idxLists[i].length; j++)
-            {
-                System.out.print((int)idxLists[i].get(j) + " ");
-            }
-            System.out.println();
-        }
-
-        System.out.println(" First one finished "); */
 
         for (int i = 0; i < newIdxLists.length; i++)
         {
@@ -206,7 +189,7 @@ public class ColorGraph
         return groupLists;
     }
 
-    // Unneeded.
+    // Simple binary search.
     public static boolean bSearch(DoubleMatrix toSearch, int n, double target)
     {
         int l = 0;
