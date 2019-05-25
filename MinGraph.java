@@ -79,7 +79,8 @@ public class MinGraph
             nodeDegrees[i] = nodeStorage;
         }
         
-        // Bubble sort in order of the degrees
+        // Bubble sort in order of the degrees- Just do this with a heap, you only need the max/min degree element one at a time
+        // So no point in going through a whole sorting algorithm.
         int[] temp = {0, 0};
         int n = nodeDegrees.length;
         
