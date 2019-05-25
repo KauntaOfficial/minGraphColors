@@ -117,6 +117,8 @@ public class MinGraph
             vertexColors[nodeDegrees[counter][0]] = 0;
 
             //If adjacent nodes have the same color as the current node, increment those colors by one.
+            // Couldn't this cause issues in the long run? Some nodes could be able to be down 1 or 2 colors, 
+            // so you're theoretically handicapping yourself here.
             while (adjacentVertexColors.contains(vertexColors[nodeDegrees[counter][0]]))
             {
                 vertexColors[nodeDegrees[counter][0]] = vertexColors[nodeDegrees[counter][0]] + 1;
