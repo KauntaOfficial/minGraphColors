@@ -6,8 +6,8 @@ import java.util.*;
 import java.io.*;
 
 // Need to make sure that the jblas package is installed.
-// Compile with statement javac -cp '.:jblas-1.2.4.jar' kMeans.java
-// Run with statement java -cp '.:jblas-1.2.4.jar' kMeans file.txt
+// Compile with statement javac -cp '.:jblas-1.2.4.jar' KMeans.java
+// Run with statement java -cp '.:jblas-1.2.4.jar' KMeans file.txt
 
 public class KMeans
 {

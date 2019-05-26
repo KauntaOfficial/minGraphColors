@@ -9,8 +9,15 @@ public class ColorGraph
     // Run with java ColorGraph clusterFile graphFile
     public static void main(String[] args) throws FileNotFoundException
     {
+        //For Debugging
+        //String graphf = "2dsurface.txt";
+        //String clusterf = "clusterResults.txt";
+
         File graphFile = new File(args[1]);
         File clusterFile = new File(args[0]);
+
+        //File graphFile = new File(graphf);
+        //File clusterFile = new File(clusterf);
 
         Graph graph = new Graph(graphFile);
 
@@ -88,14 +95,56 @@ public class ColorGraph
         return res;
     } 
 
+    public static int[] linear(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
+    {
+        // Colors start at 1, a color of 0 means that no color has been assigned yet.
+        int[] colors = new int[graph.vertexCount];
+        int colorsUsed = 0;
+
+        for (int i = 0; i < clusterCount; i++)
+        {
+            int currentCluster = i;
+
+            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
+            {
+                int currentVertex = clusters.get(currentCluster).get(j);
+
+                // Index 0 will be foo, if index 0 is true, there are adjacent vertices that do not have colors assigned to them yet.
+                boolean[] adjColors = new boolean[colorsUsed + 1];
+                
+                // Place a true in the index of a color that is used by all adjacent vertices.
+                for (int k = 0; k < graph.adjacencyList[currentVertex].length; k++)
+                {
+                    adjColors[colors[graph.adjacencyList[currentVertex][k]]] = true; 
+                }
+                
+                // Find the first available color for the current vertex.
+                int usableColor = 0;
+                while((usableColor <= colorsUsed) && adjColors[usableColor])
+                {
+                    usableColor++;
+                } 
+
+                // Increment the amount of colors used, if applicable.
+                if (usableColor > colorsUsed)
+                {
+                    colorsUsed = usableColor; // Should be the same as colorsUsed++, as usable color only increments by one at a time.
+                }
+
+                // Set the color of the current vertex to that of the first usable color.
+                colors[currentVertex] = usableColor;
+            }
+        }
+
+        return colors;
+    }
+
     // Takes the clusters in order from largest to smallest, and the inner nodes linearly.
     public static int[] cLtoSiLinear(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
     {
         // Colors start at 1, a color of 0 means that no color has been assigned yet.
         int[] colors = new int[graph.vertexCount];
         int colorsUsed = 0;
-
-        // Heap method doesn't work bc thsi is hella gay
 
         // Create a priority Queue to store the cluster sizes. This is a max Heap
         PriorityQueue<Integer[]> clusterSizeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> y[1] - x[1]);
@@ -110,6 +159,7 @@ public class ColorGraph
         for (int i = 0; i < clusterCount; i++)
         {
             int currentCluster = clusterSizeAccess.poll()[0];
+            //System.out.println(currentCluster);
 
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
             {
@@ -122,15 +172,14 @@ public class ColorGraph
                 for (int k = 0; k < graph.adjacencyList[currentVertex].length; k++)
                 {
                     adjColors[colors[graph.adjacencyList[currentVertex][k]]] = true; 
-                    System.out.println(colors[graph.adjacencyList[currentVertex][k]]);
                 }
-
+                
                 // Find the first available color for the current vertex.
-                int usableColor = 1;
-                while (usableColor <= colorsUsed && adjColors[usableColor]);
+                int usableColor = 0;
+                while((usableColor <= colorsUsed) && adjColors[usableColor])
                 {
                     usableColor++;
-                }
+                } 
 
                 // Increment the amount of colors used, if applicable.
                 if (usableColor > colorsUsed)

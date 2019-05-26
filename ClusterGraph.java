@@ -7,8 +7,8 @@ import javax.lang.model.util.ElementScanner6;
 import java.io.*;
 
 // Need to make sure that the jblas package is installed.
-// Compile with statement javac -cp '.:jblas-1.2.4.jar' kMeans.java
-// Run with statement java -cp '.:jblas-1.2.4.jar' kMeans file.txt
+// Compile with statement javac -cp '.:jblas-1.2.4.jar' ClusterGraph.java
+// Run with statement java -cp '.:jblas-1.2.4.jar' ClusterGraph file.txt >clusterResults.txt
 
 public class ClusterGraph
 {
@@ -26,7 +26,7 @@ public class ClusterGraph
         // Duplicated idx for easy use since I want to save the original idx at least for now.
         DoubleMatrix newIdx = idx.dup();
         DoubleMatrix clusterSizes = countClusters(clusterCount, newIdx);
-        int reclusterCap = colorGraph.K / 5;
+        int reclusterCap = colorGraph.K / 4;
         int newClusterCount = clusterCount;
 
         // Continually recluster until all of the clusters are smaller than the average size, aka the square root of the amount of vertices.
