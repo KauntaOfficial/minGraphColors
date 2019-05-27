@@ -50,15 +50,66 @@ public class ColorGraph
         }
         input.close();
 
-        // Run the colorings from here, as there will be multiple ones while we test for the best one.
-        int[] colors = cLtoSiLinear(clusterCount, graph, clusters, clusterSizes);
+        // This gets the colors determined by clusters largest to smallest and vertices linear within.
+        int[] clsilOrder = cLtoSiLinear(clusterCount, graph, clusters, clusterSizes);
+        int[] clsilColors = color(clsilOrder, graph);
+        int clsilColorCount = determineSuccessAndCountDistict(clsilColors, graph, clsilColors.length);
+        System.out.println("Colors found by clusters l to s vertices linear is " + clsilColorCount);
 
+        // Purely linear order straight through the clusters in order, straight through the clusters in order.
+        int[] linearTcOrder = linearThroughClusters(clusterCount, graph, clusters, clusterSizes);
+        int[] linearTcColors = color(linearTcOrder, graph);
+        int linearTcColorCount = determineSuccessAndCountDistict(linearTcColors, graph, linearTcColors.length);
+        System.out.println("Colors found by linear through clusters and vertices is " + linearTcColorCount);
+    }
+
+    public static int determineSuccessAndCountDistict(int[] colors, Graph graph, int n)
+    {
         if (colorTest(colors, graph))
         {
             System.out.println("Success!");
         }
 
-        System.out.println(countDistinct(colors, colors.length));
+        return countDistinct(colors, n);
+    }
+
+    public static int[] color(int[] order, Graph graph)
+    {
+        // Colors start at 1, a color of 0 means that no color has been assigned yet.
+        int[] colors = new int[order.length];
+        int colorsUsed = 0;
+
+        for (int i = 0; i < order.length; i++)
+        {
+            int currentVertex = order[i];
+
+            // Index 0 will be foo, if index 0 is true, there are adjacent vertices that do not have colors assigned to them yet.
+            boolean[] adjColors = new boolean[colorsUsed + 1];
+            
+            // Place a true in the index of a color that is used by all adjacent vertices.
+            for (int j = 0; j < graph.adjacencyList[currentVertex].length; j++)
+            {
+                adjColors[colors[graph.adjacencyList[currentVertex][j]]] = true;
+            }
+            
+            // Find the first available color for the current vertex.
+            int usableColor = 0;
+            while((usableColor <= colorsUsed) && adjColors[usableColor])
+            {
+                usableColor++;
+            } 
+
+            // Increment the amount of colors used, if applicable.
+            if (usableColor > colorsUsed)
+            {
+                colorsUsed = usableColor; // Should be the same as colorsUsed++, as usable color only increments by one at a time.
+            }
+
+            // Set the color of the current vertex to that of the first usable color.
+            colors[currentVertex] = usableColor;
+        }
+
+        return colors;
     }
 
     public static boolean colorTest(int[] colors, Graph g)
@@ -95,11 +146,13 @@ public class ColorGraph
         return res;
     } 
 
-    public static int[] linear(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
+
+
+    public static int[] linearThroughClusters(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
     {
         // Colors start at 1, a color of 0 means that no color has been assigned yet.
-        int[] colors = new int[graph.vertexCount];
-        int colorsUsed = 0;
+        int[] order = new int[graph.vertexCount];
+        int placeInOderTracker = 0;
 
         for (int i = 0; i < clusterCount; i++)
         {
@@ -109,42 +162,20 @@ public class ColorGraph
             {
                 int currentVertex = clusters.get(currentCluster).get(j);
 
-                // Index 0 will be foo, if index 0 is true, there are adjacent vertices that do not have colors assigned to them yet.
-                boolean[] adjColors = new boolean[colorsUsed + 1];
-                
-                // Place a true in the index of a color that is used by all adjacent vertices.
-                for (int k = 0; k < graph.adjacencyList[currentVertex].length; k++)
-                {
-                    adjColors[colors[graph.adjacencyList[currentVertex][k]]] = true; 
-                }
-                
-                // Find the first available color for the current vertex.
-                int usableColor = 0;
-                while((usableColor <= colorsUsed) && adjColors[usableColor])
-                {
-                    usableColor++;
-                } 
-
-                // Increment the amount of colors used, if applicable.
-                if (usableColor > colorsUsed)
-                {
-                    colorsUsed = usableColor; // Should be the same as colorsUsed++, as usable color only increments by one at a time.
-                }
-
-                // Set the color of the current vertex to that of the first usable color.
-                colors[currentVertex] = usableColor;
+                order[placeInOderTracker] = currentVertex;
+                placeInOderTracker++;
             }
         }
 
-        return colors;
+        return order;
     }
 
     // Takes the clusters in order from largest to smallest, and the inner nodes linearly.
     public static int[] cLtoSiLinear(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
     {
         // Colors start at 1, a color of 0 means that no color has been assigned yet.
-        int[] colors = new int[graph.vertexCount];
-        int colorsUsed = 0;
+        int[] order = new int[graph.vertexCount];
+        int placeInOderTracker = 0;
 
         // Create a priority Queue to store the cluster sizes. This is a max Heap
         PriorityQueue<Integer[]> clusterSizeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> y[1] - x[1]);
@@ -165,33 +196,11 @@ public class ColorGraph
             {
                 int currentVertex = clusters.get(currentCluster).get(j);
 
-                // Index 0 will be foo, if index 0 is true, there are adjacent vertices that do not have colors assigned to them yet.
-                boolean[] adjColors = new boolean[colorsUsed + 1];
-                
-                // Place a true in the index of a color that is used by all adjacent vertices.
-                for (int k = 0; k < graph.adjacencyList[currentVertex].length; k++)
-                {
-                    adjColors[colors[graph.adjacencyList[currentVertex][k]]] = true; 
-                }
-                
-                // Find the first available color for the current vertex.
-                int usableColor = 0;
-                while((usableColor <= colorsUsed) && adjColors[usableColor])
-                {
-                    usableColor++;
-                } 
-
-                // Increment the amount of colors used, if applicable.
-                if (usableColor > colorsUsed)
-                {
-                    colorsUsed = usableColor; // Should be the same as colorsUsed++, as usable color only increments by one at a time.
-                }
-
-                // Set the color of the current vertex to that of the first usable color.
-                colors[currentVertex] = usableColor;
+                order[placeInOderTracker] = currentVertex;
+                placeInOderTracker++;
             }
         }
 
-        return colors;
+        return order;
     }
 }
