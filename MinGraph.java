@@ -48,7 +48,7 @@ public class MinGraph
         return res;
     } 
     
-    public static void main(String[] args)
+    public static void main(String[] args) throws CloneNotSupportedException
     {
         //Create a new graph to manipulate.
         Graph inputGraph = new Graph();
@@ -129,62 +129,49 @@ public class MinGraph
         
         /* -------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
         // Weighted Limiting Randomness
+        ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
         int limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
-        RandomCollection<int> storedWeights = new RandomCollection<int>();
+        int[][] storedWeights = new int[vertexCount][2];
+        double totalWeight = 0;
         
         // Store the nodes with their weights which are the degrees 
         for (int node = 0; node < vertexCount; node++)
         {
-            int nodeWeight = 0;
+            int[] temp = {node, 0};
             for (int adjacentNodes = 0; adjacentNodes < inputGraph.adjacencyList[node].length; adjacentNodes++)
             {
-                nodeWeight++;
+                temp[1]++;
             }
-            
-            storedWeights.add(nodeWeight, node);
+            totalWeight += temp[1];
+            storedWeights[node] = temp;
         }
-             
-        RandomCollection<int> temporaryStoredWeights = storedWeights.clone();
+        
+        int[][] temporaryStoredWeights;
+        
         for(int timesToRun = 0; timesToRun < edgeCount/vertexCount; timesToRun++)
         {
-            for(int vertex = 0; vertex < vertexCount; vertex++)
+            System.arraycopy(storedWeights, 0, temporaryStoredWeights, 0, storedWeights.length);
+            
+            for (int i = 0 ; i < temporaryStoredWeights.length; i++)
             {
-                vertexColors = new int[vertexCount];
-                ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
-                ArrayList<Integer> storedNodes = new ArrayList<Integer>();
-                ArrayList<Integer> storedNodesHypotheticalColors = new ArrayList<Integer>();
-                
-                int selectedElement = temporaryStoredWeights.next();
-                    
-                adjacentVertexColors = new ArrayList<Integer>();
+                int randomIndex = -1;
+                double random = Math.random() * totalWeight;
 
-                //Adding adjacent node colors to arraylist.
-                for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
+                for (int j = 0; j < temporaryStoredWeights.length; j++)
                 {
-                    adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
-                }
-
-                //Initialize every element's color to 0.
-                vertexColors[selectedElement] = 0;
-
-                //If adjacent nodes have the same color as the current node, increment those colors by one.
-                while (adjacentVertexColors.contains(vertexColors[selectedElement]))
-                {
-                    vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
-
-                    if (vertexColors[selectedElement] > limitingColorCount - 1 && adjacentVertexColors.contains(0))
+                    random -= temporaryStoredWeights[j][1];
+                    if (random <= 0.0d)
                     {
-                        vertexColors[selectedElement] = 0;
-                        storedNodes.add(selectedElement);
+                        randomIndex = j;
                         break;
                     }
-                } 
-            }  
-        }
+                }
+                listOfVertices.add(randomIndex);
+            }
+            // have to remove the random index chosen
+        }    
         
-               
-        
-        
+                      
         
         
         /* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -199,7 +186,7 @@ public class MinGraph
             listOfVertices.add(i);
         }
         
-        int limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
+        limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
         
         for(int timesToRun = 0; timesToRun < edgeCount/vertexCount; timesToRun++)
         {
