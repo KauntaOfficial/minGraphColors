@@ -50,6 +50,8 @@ public class ColorGraph
         }
         input.close();
 
+        int[] clusterDegrees = getClusterDegrees(clusterCount, graph, clusters, clusterSizes);
+
         // This gets the colors determined by clusters largest to smallest and vertices linear within.
         int[] clsilOrder = cLtoSiLinear(clusterCount, graph, clusters, clusterSizes);
         int[] clsilColors = color(clsilOrder, graph);
@@ -99,109 +101,32 @@ public class ColorGraph
         System.out.println("Colors found by cluster degree from smallest to largest is " + cDegreeSLCount); 
 
         // Cluster Degree from largest to smallest, vertex degree from largest to smallest
-        int[] cDegreeLSvDegreeLS = cDegreesLSvDegreesLS(clusterCount, graph, clusters, clusterSizes);
+        int[] cDegreeLSvDegreeLS = cDegreesLSvDegreesLS(clusterCount, graph, clusters, clusterSizes, clusterDegrees);
         int[] cDegreeLSvDegreeLSColors = color(cDegreeLSvDegreeLS, graph);
         int cDegreeLSvDegreeLSCount = determineSuccessAndCountDistict(cDegreeLSvDegreeLSColors, graph, cDegreeLSvDegreeLSColors.length);
         System.out.println("Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is " + cDegreeLSvDegreeLSCount);
 
         // Cluster Degree from smallest to largest, vertex degree from smallest to largest.
-        int[] cDegreeSLvDegreeSL = cDegreesSLvDegreesSL(clusterCount, graph, clusters, clusterSizes);
+        int[] cDegreeSLvDegreeSL = cDegreesSLvDegreesSL(clusterCount, graph, clusters, clusterSizes, clusterDegrees);
         int[] cDegreeSLvDegreeSLColors = color(cDegreeSLvDegreeSL, graph);
         int cDegreeSLvDegreeSLCount = determineSuccessAndCountDistict(cDegreeSLvDegreeSLColors, graph, cDegreeSLvDegreeSLColors.length);
         System.out.println("Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is " + cDegreeSLvDegreeSLCount);
 
         // Cluster Degree from largest to smallest, vertex degree from smallest to largest.
-        int[] cDegreeLSvDegreeSL = cDegreesLSvDegreesSL(clusterCount, graph, clusters, clusterSizes);
+        int[] cDegreeLSvDegreeSL = cDegreesLSvDegreesSL(clusterCount, graph, clusters, clusterSizes, clusterDegrees);
         int[] cDegreeLSvDegreeSLColors = color(cDegreeLSvDegreeSL, graph);
         int cDegreeLSvDegreeSLCount = determineSuccessAndCountDistict(cDegreeLSvDegreeSLColors, graph, cDegreeLSvDegreeSLColors.length);
         System.out.println("Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is " + cDegreeLSvDegreeSLCount);
 
         // Cluster Degree from smallest to largest, vertex degree from largest to smallest.
-        int[] cDegreeSLvDegreeLS = cDegreesSLvDegreesLS(clusterCount, graph, clusters, clusterSizes);
+        int[] cDegreeSLvDegreeLS = cDegreesSLvDegreesLS(clusterCount, graph, clusters, clusterSizes, clusterDegrees);
         int[] cDegreeSLvDegreeLSColors = color(cDegreeSLvDegreeLS, graph);
         int cDegreeSLvDegreeLSCount = determineSuccessAndCountDistict(cDegreeSLvDegreeLSColors, graph, cDegreeSLvDegreeLSColors.length);
         System.out.println("Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is " + cDegreeSLvDegreeLSCount);
     }
 
-    public static int[] cDegreesLSvDegreesLS(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
+    public static int[] cDegreesLSvDegreesLS(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes, int[] clusterDegrees)
     {
-        int[] clusterDegrees = getClusterDegrees(clusterCount, graph, clusters, clusterSizes);
-        int[] order = new int[graph.vertexCount];
-        int orderTracker = 0;
-
-        PriorityQueue<Integer[]> clusterDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> x[1] - y[1]);
-        for (int i = 0; i < clusterDegrees.length; i++)
-        {
-            Integer[] toOffer = new Integer[2];
-            toOffer[0] = i;
-            toOffer[1] = clusterDegrees[i];
-            clusterDegreeAccess.offer(toOffer);
-        }
-
-        for (int i = 0; i < clusterCount; i++)
-        {
-            int currentCluster = clusterDegreeAccess.peek()[0];
-
-            PriorityQueue<Integer[]> vertexDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> x[1] - y[1]);
-            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
-            {
-                Integer[] toOffer = new Integer[2];
-                toOffer[0] = clusters.get(currentCluster).get(j);
-                toOffer[1] = graph.degreeArray[clusters.get(currentCluster).get(j)];
-                clusterDegreeAccess.offer(toOffer);
-            }
-
-            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
-            {
-                int currentVertex = vertexDegreeAccess.peek()[0];
-                order[orderTracker] = currentVertex;
-                orderTracker++;
-            }
-        }
-        return order;
-    }
-
-    public static int[] cDegreesSLvDegreesLS(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
-    {
-        int[] clusterDegrees = getClusterDegrees(clusterCount, graph, clusters, clusterSizes);
-        int[] order = new int[graph.vertexCount];
-        int orderTracker = 0;
-
-        PriorityQueue<Integer[]> clusterDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> y[1] - x[1]);
-        for (int i = 0; i < clusterDegrees.length; i++)
-        {
-            Integer[] toOffer = new Integer[2];
-            toOffer[0] = i;
-            toOffer[1] = clusterDegrees[i];
-            clusterDegreeAccess.offer(toOffer);
-        }
-
-        for (int i = 0; i < clusterCount; i++)
-        {
-            int currentCluster = clusterDegreeAccess.peek()[0];
-
-            PriorityQueue<Integer[]> vertexDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> x[1] - y[1]);
-            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
-            {
-                Integer[] toOffer = new Integer[2];
-                toOffer[0] = clusters.get(currentCluster).get(j);
-                toOffer[1] = graph.degreeArray[clusters.get(currentCluster).get(j)];
-                clusterDegreeAccess.offer(toOffer);
-            }
-
-            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
-            {
-                int currentVertex = vertexDegreeAccess.peek()[0];
-                order[orderTracker] = currentVertex;
-                orderTracker++;
-            }
-        }
-        return order;
-    }
-
-    public static int[] cDegreesSLvDegreesSL(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
-    {
-        int[] clusterDegrees = getClusterDegrees(clusterCount, graph, clusters, clusterSizes);
         int[] order = new int[graph.vertexCount];
         int orderTracker = 0;
 
@@ -237,9 +162,8 @@ public class ColorGraph
         return order;
     }
 
-    public static int[] cDegreesLSvDegreesSL(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
+    public static int[] cDegreesSLvDegreesLS(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes, int[] clusterDegrees)
     {
-        int[] clusterDegrees = getClusterDegrees(clusterCount, graph, clusters, clusterSizes);
         int[] order = new int[graph.vertexCount];
         int orderTracker = 0;
 
@@ -257,6 +181,80 @@ public class ColorGraph
             int currentCluster = clusterDegreeAccess.peek()[0];
 
             PriorityQueue<Integer[]> vertexDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> y[1] - x[1]);
+            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
+            {
+                Integer[] toOffer = new Integer[2];
+                toOffer[0] = clusters.get(currentCluster).get(j);
+                toOffer[1] = graph.degreeArray[clusters.get(currentCluster).get(j)];
+                clusterDegreeAccess.offer(toOffer);
+            }
+
+            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
+            {
+                int currentVertex = vertexDegreeAccess.peek()[0];
+                order[orderTracker] = currentVertex;
+                orderTracker++;
+            }
+        }
+        return order;
+    }
+
+    public static int[] cDegreesSLvDegreesSL(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes, int[] clusterDegrees)
+    {
+        int[] order = new int[graph.vertexCount];
+        int orderTracker = 0;
+
+        PriorityQueue<Integer[]> clusterDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> x[1] - y[1]);
+        for (int i = 0; i < clusterDegrees.length; i++)
+        {
+            Integer[] toOffer = new Integer[2];
+            toOffer[0] = i;
+            toOffer[1] = clusterDegrees[i];
+            clusterDegreeAccess.offer(toOffer);
+        }
+
+        for (int i = 0; i < clusterCount; i++)
+        {
+            int currentCluster = clusterDegreeAccess.peek()[0];
+
+            PriorityQueue<Integer[]> vertexDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> x[1] - y[1]);
+            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
+            {
+                Integer[] toOffer = new Integer[2];
+                toOffer[0] = clusters.get(currentCluster).get(j);
+                toOffer[1] = graph.degreeArray[clusters.get(currentCluster).get(j)];
+                clusterDegreeAccess.offer(toOffer);
+            }
+
+            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
+            {
+                int currentVertex = vertexDegreeAccess.peek()[0];
+                order[orderTracker] = currentVertex;
+                orderTracker++;
+            }
+        }
+        return order;
+    }
+
+    public static int[] cDegreesLSvDegreesSL(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes, int[] clusterDegrees)
+    {
+        int[] order = new int[graph.vertexCount];
+        int orderTracker = 0;
+
+        PriorityQueue<Integer[]> clusterDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> y[1] - x[1]);
+        for (int i = 0; i < clusterDegrees.length; i++)
+        {
+            Integer[] toOffer = new Integer[2];
+            toOffer[0] = i;
+            toOffer[1] = clusterDegrees[i];
+            clusterDegreeAccess.offer(toOffer);
+        }
+
+        for (int i = 0; i < clusterCount; i++)
+        {
+            int currentCluster = clusterDegreeAccess.peek()[0];
+
+            PriorityQueue<Integer[]> vertexDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> x[1] - y[1]);
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
             {
                 Integer[] toOffer = new Integer[2];
@@ -568,8 +566,39 @@ public class ColorGraph
         return res;
     }
     
+    // For some reason this method does not return the right degree for the first cluster in the current clustering of 2dsurface
+    
     public static int[] getClusterDegrees(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
     {
-        return new int[1];
+        int[] degrees = new int[clusterCount];
+
+        for (int i = 0; i < clusterCount; i++)
+        {
+            boolean[] connected = new boolean[graph.vertexCount];
+            int degreeCounter = 0;
+
+            for (int j = 0; j < clusters.get(i).size(); j++)
+            {
+                int cVertex = clusters.get(i).get(j);
+                for (int k = 0; k < graph.adjacencyList[cVertex].length; k++)
+                {
+                    if (!connected[graph.adjacencyList[cVertex][k]])
+                    {
+                        connected[graph.adjacencyList[cVertex][k]] = true;
+                        degreeCounter++;
+                    }
+                }
+            }
+
+            // Remove any of the nodes in this cluster from the nodes it's adjacent to.
+            for (int j = 0; j < clusters.get(i).size(); j++)
+            {
+                connected[clusters.get(i).get(j)] = false;
+            }
+
+            degrees[i] = degreeCounter;
+        }
+
+        return degrees;
     }
 }
