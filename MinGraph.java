@@ -130,11 +130,11 @@ public class MinGraph
         /* -------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
         // Weighted Limiting Randomness
         int limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
-        RandomCollection<int> storedWeights = new RandomCollection<int>()
+        RandomCollection<int> storedWeights = new RandomCollection<int>();
         
         // Store the nodes with their weights which are the degrees 
         for (int node = 0; node < vertexCount; node++)
-        
+        {
             int nodeWeight = 0;
             for (int adjacentNodes = 0; adjacentNodes < inputGraph.adjacencyList[node].length; adjacentNodes++)
             {
@@ -154,7 +154,7 @@ public class MinGraph
                 ArrayList<Integer> storedNodes = new ArrayList<Integer>();
                 ArrayList<Integer> storedNodesHypotheticalColors = new ArrayList<Integer>();
                 
-                int selectedElement = temporaryStoredWeights.next()
+                int selectedElement = temporaryStoredWeights.next();
                     
                 adjacentVertexColors = new ArrayList<Integer>();
 
