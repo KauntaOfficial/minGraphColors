@@ -86,7 +86,7 @@ public class ColorGraph
         } 
         
         return res;
-    } 
+    }+
 
     // Takes the clusters in order from largest to smallest, and the inner nodes linearly.
     public static int[] cLtoSiLinear(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
