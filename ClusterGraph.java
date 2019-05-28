@@ -48,6 +48,33 @@ public class ClusterGraph
                 nonZeroClusterCount++;
         }
 
+        ArrayList<ArrayList<Integer>> clusters = new ArrayList<ArrayList<Integer>>(clusterCount);
+        for (int i = 0; i < nonZeroClusterCount; i++)
+        {
+            clusters.add(new ArrayList<Integer>());
+        }
+
+        // Copied from next file over, working on getting the two to work together
+        int[] clusterSize = new int[clusterCount];
+
+        int clusterTracker = 0;
+        while (input.hasNextLine())
+        {
+            Scanner line = new Scanner(input.nextLine());
+
+            while (line.hasNextInt())
+            {
+                clusters.get(clusterTracker).add(line.nextInt());
+                clusterSize[clusterTracker]++;
+            }
+            clusterTracker++;
+            line.close();
+        }
+        input.close();
+
+        // Need a way to convert the newIdxLists into the ArrayList used in ColorGraph.java
+        /////////////////////////////////////////////////////////////////////////
+
         System.out.println(nonZeroClusterCount);
         for (int i = 0; i < newIdxLists.length; i++)
         {

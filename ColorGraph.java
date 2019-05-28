@@ -56,11 +56,261 @@ public class ColorGraph
         int clsilColorCount = determineSuccessAndCountDistict(clsilColors, graph, clsilColors.length);
         System.out.println("Colors found by clusters l to s vertices linear is " + clsilColorCount);
 
+        // This gets the colors determined by clusters smallest to largest and vertices linear within.
+        int[] cllisOrder = cLtoSiLinear(clusterCount, graph, clusters, clusterSizes);
+        int[] cllisColors = color(cllisOrder, graph);
+        int cllisColorCount = determineSuccessAndCountDistict(cllisColors, graph, cllisColors.length);
+        System.out.println("Colors found by clusters s to l vertices linear is " + cllisColorCount);
+
         // Purely linear order straight through the clusters in order, straight through the clusters in order.
         int[] linearTcOrder = linearThroughClusters(clusterCount, graph, clusters, clusterSizes);
         int[] linearTcColors = color(linearTcOrder, graph);
         int linearTcColorCount = determineSuccessAndCountDistict(linearTcColors, graph, linearTcColors.length);
-        System.out.println("Colors found by linear through clusters and vertices is " + linearTcColorCount);
+        System.out.println("Colors found by linear through clusters and vertices is " + linearTcColorCount); 
+
+        // purely linear order from vertex 0 to n.
+        int[] linearOrder = pureLinear(graph);
+        int[] linearColors = color(linearOrder, graph);
+        int linearColorCount = determineSuccessAndCountDistict(linearColors, graph, linearColors.length);
+        System.out.println("Colors found by linear is " + linearColorCount);
+
+        // Degree from largest to smallest.
+        int[] degreeLtoSOrder = degreeLtoS(graph);
+        int[] degreeLtoSColors = color(degreeLtoSOrder, graph);
+        int degreeLtoSCount = determineSuccessAndCountDistict(degreeLtoSColors, graph, degreeLtoSColors.length);
+        System.out.println("Colors found by degree from largest to smallest is " + degreeLtoSCount);
+
+        // Degree from smallest to largest.
+        int[] degreeStoLOrder = degreeStoL(graph);
+        int[] degreeStoLColors = color(degreeStoLOrder, graph);
+        int degreeStoLCount = determineSuccessAndCountDistict(degreeStoLColors, graph, degreeStoLColors.length);
+        System.out.println("Colors found by degree from smallest to largest is " + degreeStoLCount); 
+
+        // Cluster Degree from largest to smallest.
+        int[] cDegreeLS = degreeStoL(graph);
+        int[] cDegreeLSColors = color(cDegreeLS, graph);
+        int cDegreeLSCount = determineSuccessAndCountDistict(cDegreeLSColors, graph, cDegreeLSColors.length);
+        System.out.println("Colors found by cluster degree from largest to smallest is " + cDegreeLSCount); 
+
+        // Cluster Degree from smallest to largest.
+        int[] cDegreeSL = degreeStoL(graph);
+        int[] cDegreeSLColors = color(cDegreeSL, graph);
+        int cDegreeSLCount = determineSuccessAndCountDistict(cDegreeSLColors, graph, cDegreeSLColors.length);
+        System.out.println("Colors found by cluster degree from smallest to largest is " + cDegreeSLCount); 
+
+        /*for (int i = 0; i < linearColors.length; i++)
+        {
+            System.out.print(linearColors[i] + " ");
+        }
+        System.out.println(); */
+    }
+
+    public static int[] pureLinear(Graph graph)
+    {
+        int[] order = new int[graph.vertexCount];
+
+        for (int i = 0; i < graph.vertexCount; i++)
+        {
+            order[i] = i;
+        }
+
+        return order;
+    } 
+
+    public static int[] linearThroughClusters(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
+    {
+        // Colors start at 1, a color of 0 means that no color has been assigned yet.
+        int[] order = new int[graph.vertexCount];
+        int placeInOderTracker = 0;
+
+        for (int i = 0; i < clusterCount; i++)
+        {
+            int currentCluster = i;
+
+            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
+            {
+                int currentVertex = clusters.get(currentCluster).get(j);
+
+                order[placeInOderTracker] = currentVertex;
+                placeInOderTracker++;
+            }
+        }
+
+        return order;
+    }
+
+    public static int[] clusterDegressLtoS(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
+    {
+        int[] order = new int[graph.vertexCount];
+        int[] clusterDegrees = degreeOfClusters(clusterCount, graph, clusters, clusterSizes);
+        int placeInOderTracker = 0;
+
+        PriorityQueue<Integer[]> clusterDegreeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> y[1] - x[1]);
+        for (int i = 0; i < clusterDegrees.length; i++)
+        {
+            Integer[] toOffer = new Integer[2];
+            toOffer[0] = i;
+            toOffer[1] = clusterDegrees[i];
+            clusterDegreeAccess.offer(toOffer);
+        }
+
+        for (int i = 0; i < clusterCount; i++)
+        {
+            int currentCluster = clusterDegreeAccess.peek()[0];
+
+            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
+            {
+                int currentVertex = clusters.get(currentCluster).get(j);
+
+                order[placeInOderTracker] = currentVertex;
+                placeInOderTracker++;
+            }
+        }
+
+        return order;
+    }
+
+    public static int[] clusterDegressStoL(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
+    {
+        int[] order = new int[graph.vertexCount];
+        int[] clusterDegrees = degreeOfClusters(clusterCount, graph, clusters, clusterSizes);
+        int placeInOderTracker = 0;
+
+        PriorityQueue<Integer[]> clusterDegreeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> x[1] - y[1]);
+        for (int i = 0; i < clusterDegrees.length; i++)
+        {
+            Integer[] toOffer = new Integer[2];
+            toOffer[0] = i;
+            toOffer[1] = clusterDegrees[i];
+            clusterDegreeAccess.offer(toOffer);
+        }
+
+        for (int i = 0; i < clusterCount; i++)
+        {
+            int currentCluster = clusterDegreeAccess.peek()[0];
+
+            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
+            {
+                int currentVertex = clusters.get(currentCluster).get(j);
+
+                order[placeInOderTracker] = currentVertex;
+                placeInOderTracker++;
+            }
+        }
+
+        return order;
+    }
+
+    public static int[] degreeLtoS(Graph graph)
+    {
+        int[] order = new int[graph.vertexCount];
+
+        PriorityQueue<Integer[]> degreeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> y[1] - x[1]);
+        for (int i = 0; i < graph.vertexCount; i++)
+        {
+            Integer[] toOffer = new Integer[2];
+            toOffer[0] = i;
+            toOffer[1] = graph.degreeArray[i];
+            degreeAccess.offer(toOffer);
+        }
+
+        for (int i = 0; i < graph.vertexCount; i++)
+        {
+            int currentVertex = degreeAccess.poll()[0];
+            order[i] = currentVertex;
+        }
+
+        return order;
+    }
+
+    public static int[] degreeStoL(Graph graph)
+    {
+        int[] order = new int[graph.vertexCount];
+
+        PriorityQueue<Integer[]> degreeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> x[1] - y[1]);
+        for (int i = 0; i < graph.vertexCount; i++)
+        {
+            Integer[] toOffer = new Integer[2];
+            toOffer[0] = i;
+            toOffer[1] = graph.degreeArray[i];
+            degreeAccess.offer(toOffer);
+        }
+
+        for (int i = 0; i < graph.vertexCount; i++)
+        {
+            int currentVertex = degreeAccess.poll()[0];
+            order[i] = currentVertex;
+        }
+
+        return order;
+    }
+
+    // Takes the clusters in order from largest to smallest, and the inner nodes linearly.
+    public static int[] cLtoSiLinear(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
+    {
+        // Colors start at 1, a color of 0 means that no color has been assigned yet.
+        int[] order = new int[graph.vertexCount];
+        int placeInOderTracker = 0;
+
+        // Create a priority Queue to store the cluster sizes. This is a max Heap
+        PriorityQueue<Integer[]> clusterSizeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> y[1] - x[1]);
+        for (int i = 0; i < clusterCount; i++)
+        {
+            Integer[] toOffer = new Integer[2];
+            toOffer[0] = i;
+            toOffer[1] = clusterSizes[i];
+            clusterSizeAccess.offer(toOffer);
+        }
+
+        for (int i = 0; i < clusterCount; i++)
+        {
+            int currentCluster = clusterSizeAccess.poll()[0];
+            //System.out.println(currentCluster);
+
+            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
+            {
+                int currentVertex = clusters.get(currentCluster).get(j);
+
+                order[placeInOderTracker] = currentVertex;
+                placeInOderTracker++;
+            }
+        }
+
+        return order;
+    }
+
+    public static int[] cStoLiLinear(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
+    {
+        // Colors start at 1, a color of 0 means that no color has been assigned yet.
+        int[] order = new int[graph.vertexCount];
+        int placeInOderTracker = 0;
+
+        // Create a priority Queue to store the cluster sizes. This is a min Heap. Uses a lambda function so that we can keep track of the 
+        // Other part of the information using the first part of the tuple.
+        PriorityQueue<Integer[]> clusterSizeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> x[1] - y[1]);
+        for (int i = 0; i < clusterCount; i++)
+        {
+            Integer[] toOffer = new Integer[2];
+            toOffer[0] = i;
+            toOffer[1] = clusterSizes[i];
+            clusterSizeAccess.offer(toOffer);
+        }
+
+        for (int i = 0; i < clusterCount; i++)
+        {
+            int currentCluster = clusterSizeAccess.poll()[0];
+            //System.out.println(currentCluster);
+
+            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
+            {
+                int currentVertex = clusters.get(currentCluster).get(j);
+
+                order[placeInOderTracker] = currentVertex;
+                placeInOderTracker++;
+            }
+        }
+
+        return order;
     }
 
     public static int determineSuccessAndCountDistict(int[] colors, Graph graph, int n)
@@ -86,6 +336,8 @@ public class ColorGraph
             // Index 0 will be foo, if index 0 is true, there are adjacent vertices that do not have colors assigned to them yet.
             boolean[] adjColors = new boolean[colorsUsed + 1];
             
+            // A node can never have a color of 0, so this is in place to prevent that.
+            adjColors[0] = true;
             // Place a true in the index of a color that is used by all adjacent vertices.
             for (int j = 0; j < graph.adjacencyList[currentVertex].length; j++)
             {
@@ -144,63 +396,30 @@ public class ColorGraph
         } 
         
         return res;
-    } 
-
-
-
-    public static int[] linearThroughClusters(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
-    {
-        // Colors start at 1, a color of 0 means that no color has been assigned yet.
-        int[] order = new int[graph.vertexCount];
-        int placeInOderTracker = 0;
-
-        for (int i = 0; i < clusterCount; i++)
-        {
-            int currentCluster = i;
-
-            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
-            {
-                int currentVertex = clusters.get(currentCluster).get(j);
-
-                order[placeInOderTracker] = currentVertex;
-                placeInOderTracker++;
-            }
-        }
-
-        return order;
     }
-
-    // Takes the clusters in order from largest to smallest, and the inner nodes linearly.
-    public static int[] cLtoSiLinear(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
+    
+    public static int[] degreeOfClusters(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes)
     {
-        // Colors start at 1, a color of 0 means that no color has been assigned yet.
-        int[] order = new int[graph.vertexCount];
-        int placeInOderTracker = 0;
-
-        // Create a priority Queue to store the cluster sizes. This is a max Heap
-        PriorityQueue<Integer[]> clusterSizeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> y[1] - x[1]);
+        int[] clusterDegrees = new int[clusterCount];
         for (int i = 0; i < clusterCount; i++)
         {
-            Integer[] toOffer = new Integer[2];
-            toOffer[0] = i;
-            toOffer[1] = clusterSizes[i];
-            clusterSizeAccess.offer(toOffer);
-        }
+            boolean[] connectedTo = new boolean[clusterSizes[i]];
 
-        for (int i = 0; i < clusterCount; i++)
-        {
-            int currentCluster = clusterSizeAccess.poll()[0];
-            //System.out.println(currentCluster);
-
-            for (int j = 0; j < clusters.get(currentCluster).size(); j++)
+            for (int j = 0; j < clusters.get(i).size(); j++)
             {
-                int currentVertex = clusters.get(currentCluster).get(j);
+                connectedTo[clusters.get(i).get(j)] = true;
+            }
 
-                order[placeInOderTracker] = currentVertex;
-                placeInOderTracker++;
+            int degreeCounter = 0;
+            for (int j = 0; j < connectedTo.length; j++)
+            {
+                if (connectedTo[j])
+                {
+                    degreeCounter++;
+                }
             }
         }
 
-        return order;
+        return clusterDegrees;
     }
 }
