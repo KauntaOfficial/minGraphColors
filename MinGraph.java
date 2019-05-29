@@ -126,6 +126,10 @@ public class MinGraph
         
         /* -------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
         // Weighted Limiting Randomness
+        vertexColors = new int[vertexCount];
+        ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
+        ArrayList<Integer> storedNodes = new ArrayList<Integer>();
+        ArrayList<Integer> storedNodesHypotheticalColors = new ArrayList<Integer>();
         ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
         int limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
         int[][] storedWeights = new int[vertexCount][2];
@@ -134,16 +138,16 @@ public class MinGraph
         // Store the nodes with their weights which are the degrees 
         for (int node = 0; node < vertexCount; node++)
         {
-            int[] temp = {node, 0};
+            int[] temporary = {node, 0};
             for (int adjacentNodes = 0; adjacentNodes < inputGraph.adjacencyList[node].length; adjacentNodes++)
             {
-                temp[1]++;
+                temporary[1]++;
             }
-            totalWeight += temp[1];
-            storedWeights[node] = temp;
+            totalWeight += temporary[1];
+            storedWeights[node] = temporary;
         }
         
-        int[][] temporaryStoredWeights;
+        int[][] temporaryStoredWeights = new int[vertexCount][2];
         
         for(int timesToRun = 0; timesToRun < edgeCount/vertexCount; timesToRun++)
         {
@@ -156,17 +160,94 @@ public class MinGraph
 
                 for (int j = 0; j < temporaryStoredWeights.length; j++)
                 {
-                    random -= temporaryStoredWeights[j][1];
-                    if (random <= 0.0d)
+                    if (temporaryStoredWeights[j][0] > -1)
                     {
-                        randomIndex = j;
-                        break;
+                        random -= temporaryStoredWeights[j][1];
+                        if (random <= 0.0d)
+                        {
+                            randomIndex = j;
+                            System.out.println(j);
+                            break;
+                        }
                     }
                 }
-                listOfVertices.add(randomIndex);
+                
+                //
+                listOfVertices.add(temporaryStoredWeights[randomIndex][0]);
+                    
+                //Remove the index once it has been used.
+                temporaryStoredWeights[randomIndex][0] = -1;
             }
-            // have to remove the random index chosen
-        }    
+                
+            for (int j = 0; j < vertexCount; j++)
+            {
+                if (!storedNodes.isEmpty())
+                {
+                    for (int i = 0; i < storedNodes.size(); i++)
+                    {
+                        int selectedElement = storedNodes.get(i);
+
+                        adjacentVertexColors = new ArrayList<Integer>();
+
+                        //Adding adjacent node colors to arraylist.
+                        for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
+                        {
+                            adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
+                        }
+
+                        //Initialize every element's color to 0.
+                        vertexColors[selectedElement] = 0;
+
+                        //If adjacent nodes have the same color as the current node, increment those colors by one.
+                        while (adjacentVertexColors.contains(vertexColors[selectedElement]))
+                        {
+                            vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
+
+                            if (vertexColors[selectedElement] > limitingColorCount)
+                            {
+                                vertexColors[selectedElement] = 0;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                int selectedElement = listOfVertices.get(j);
+
+                adjacentVertexColors = new ArrayList<Integer>();
+
+                //Adding adjacent node colors to arraylist.
+                for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
+                {
+                    adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
+                }
+
+                //Initialize every element's color to 0.
+                vertexColors[selectedElement] = 0;
+
+                //If adjacent nodes have the same color as the current node, increment those colors by one.
+                while (adjacentVertexColors.contains(vertexColors[selectedElement]))
+                {
+                    vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
+                    
+                    if (vertexColors[selectedElement] > limitingColorCount - 1 && adjacentVertexColors.contains(0))
+                    {
+                        vertexColors[selectedElement] = 0;
+                        storedNodes.add(selectedElement);
+                        break;
+                    }
+                } 
+            }
+
+            if (countDistinct(vertexColors, vertexColors.length) <= limitingColorCount)
+            {
+                //This array copy is good for large datasets.
+                System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
+                System.out.println("Better");
+                limitingColorCount--;
+            }
+        }
+   
         
                       
         
@@ -176,7 +257,7 @@ public class MinGraph
     
     
         //Add integers that correspond to the nodes of a graph to an arraylist.
-        ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
+        listOfVertices = new ArrayList<Integer>();
     
         for (int i = 0; i < vertexCount; i++)
         {
@@ -190,9 +271,9 @@ public class MinGraph
             for (int node = 0; node < inputGraph.adjacencyList.length; node++)
             {
                 vertexColors = new int[vertexCount];
-                ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
-                ArrayList<Integer> storedNodes = new ArrayList<Integer>();
-                ArrayList<Integer> storedNodesHypotheticalColors = new ArrayList<Integer>();
+                adjacentVertexColors = new ArrayList<Integer>();
+                storedNodes = new ArrayList<Integer>();
+                storedNodesHypotheticalColors = new ArrayList<Integer>();
                 
                 Collections.shuffle(listOfVertices);
 
