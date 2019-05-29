@@ -141,7 +141,7 @@ public class ColorGraph
 
         for (int i = 0; i < clusterCount; i++)
         {
-            int currentCluster = clusterDegreeAccess.peek()[0];
+            int currentCluster = clusterDegreeAccess.poll()[0];
 
             PriorityQueue<Integer[]> vertexDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> y[1] - x[1]);
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
@@ -149,12 +149,12 @@ public class ColorGraph
                 Integer[] toOffer = new Integer[2];
                 toOffer[0] = clusters.get(currentCluster).get(j);
                 toOffer[1] = graph.degreeArray[clusters.get(currentCluster).get(j)];
-                clusterDegreeAccess.offer(toOffer);
+                vertexDegreeAccess.offer(toOffer);
             }
 
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
             {
-                int currentVertex = vertexDegreeAccess.peek()[0];
+                int currentVertex = vertexDegreeAccess.poll()[0];
                 order[orderTracker] = currentVertex;
                 orderTracker++;
             }
@@ -178,7 +178,7 @@ public class ColorGraph
 
         for (int i = 0; i < clusterCount; i++)
         {
-            int currentCluster = clusterDegreeAccess.peek()[0];
+            int currentCluster = clusterDegreeAccess.poll()[0];
 
             PriorityQueue<Integer[]> vertexDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> y[1] - x[1]);
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
@@ -186,12 +186,12 @@ public class ColorGraph
                 Integer[] toOffer = new Integer[2];
                 toOffer[0] = clusters.get(currentCluster).get(j);
                 toOffer[1] = graph.degreeArray[clusters.get(currentCluster).get(j)];
-                clusterDegreeAccess.offer(toOffer);
+                vertexDegreeAccess.offer(toOffer);
             }
 
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
             {
-                int currentVertex = vertexDegreeAccess.peek()[0];
+                int currentVertex = vertexDegreeAccess.poll()[0];
                 order[orderTracker] = currentVertex;
                 orderTracker++;
             }
@@ -215,7 +215,7 @@ public class ColorGraph
 
         for (int i = 0; i < clusterCount; i++)
         {
-            int currentCluster = clusterDegreeAccess.peek()[0];
+            int currentCluster = clusterDegreeAccess.poll()[0];
 
             PriorityQueue<Integer[]> vertexDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> x[1] - y[1]);
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
@@ -223,12 +223,12 @@ public class ColorGraph
                 Integer[] toOffer = new Integer[2];
                 toOffer[0] = clusters.get(currentCluster).get(j);
                 toOffer[1] = graph.degreeArray[clusters.get(currentCluster).get(j)];
-                clusterDegreeAccess.offer(toOffer);
+                vertexDegreeAccess.offer(toOffer);
             }
 
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
             {
-                int currentVertex = vertexDegreeAccess.peek()[0];
+                int currentVertex = vertexDegreeAccess.poll()[0];
                 order[orderTracker] = currentVertex;
                 orderTracker++;
             }
@@ -252,7 +252,7 @@ public class ColorGraph
 
         for (int i = 0; i < clusterCount; i++)
         {
-            int currentCluster = clusterDegreeAccess.peek()[0];
+            int currentCluster = clusterDegreeAccess.poll()[0];
 
             PriorityQueue<Integer[]> vertexDegreeAccess = new PriorityQueue<Integer[]>((Integer x[], Integer y[]) -> x[1] - y[1]);
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
@@ -260,12 +260,12 @@ public class ColorGraph
                 Integer[] toOffer = new Integer[2];
                 toOffer[0] = clusters.get(currentCluster).get(j);
                 toOffer[1] = graph.degreeArray[clusters.get(currentCluster).get(j)];
-                clusterDegreeAccess.offer(toOffer);
+                vertexDegreeAccess.offer(toOffer);
             }
 
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
             {
-                int currentVertex = vertexDegreeAccess.peek()[0];
+                int currentVertex = vertexDegreeAccess.poll()[0];
                 order[orderTracker] = currentVertex;
                 orderTracker++;
             }
