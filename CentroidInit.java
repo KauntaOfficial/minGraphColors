@@ -26,13 +26,20 @@ public class CentroidInit
                 initCentroids(X, clusterCount);
                 break;
             case 1:
-                
+                // the third parameter is the desired power that the weights are multiplied by. Higher power means more chance for the next node to be further away.
+                weightedInitCentroids(X, clusterCount, 3);
                 break;
         }
     }
 
-    // Basic Initialization - easiest one to do.
-    private DoubleMatrix initCentroids(DoubleMatrix X, int K, boolean weighted)
+    private int randomInt(int min, int max)
+    {
+        //int range = (max  min) + 1;
+        return (int)(Math.random() * max) + min;
+    }
+
+    // Basic Initialization - easiest one to do. Chooses the vertex furthest away from all of the centroids to be the next one.
+    private DoubleMatrix initCentroids(DoubleMatrix X, int K)
     {
         // Get a random row to start as the first centroid.
         int randidx = (int)randomInt(0, X.rows);
@@ -83,7 +90,7 @@ public class CentroidInit
     }
 
     // Same thing as init centroids, but the next centroids are chosen using a weighted random selection, rather than the one farthest away.
-    private DoubleMatrix weightedInitCentroids(DoubleMatrix X, int K)
+    private DoubleMatrix weightedInitCentroids(DoubleMatrix X, int K, int power)
     {
         // Get a random row to start as the first centroid.
         int randidx = (int)randomInt(0, X.rows);
@@ -122,7 +129,7 @@ public class CentroidInit
 
             for (int i = 0; i < weights.length; i++)
             {
-                weights.put(i, Math.pow(weights.get(i), 3));
+                weights.put(i, Math.pow(weights.get(i), power));
             }
 
             // This is where this method differs from the other initializtion method.
@@ -145,4 +152,79 @@ public class CentroidInit
         
         return centroids;
     }
+
+    // First centroid is the one with the highest degree. Chooses next centroid by combination of distance and degree - multiplication
+    private DoubleMatrix highestDegreeStart(DoubleMatrix X, int K, Graph graph, int power)
+    {
+        // Find the vertex with the highest degree.
+        int maxDegree = 0;
+        for (int i = 0; i < graph.degreeArray.length; i++)
+        {
+            if (graph.degreeArray[i] > maxDegree)
+            {
+                maxDegree = graph.degreeArray[i];
+            }
+        }
+
+
+        DoubleMatrix centroids = new DoubleMatrix(K, X.columns);
+
+        // Initialize the very first row of the centroids.
+        centroids.putRow(0, X.getRow(maxDegree));
+        //Start this 0 for convenience's sake.
+        int centroidsComputed = 1;
+
+        while (centroidsComputed < K)
+        {
+            DoubleMatrix weights = DoubleMatrix.zeros(X.columns, 1);
+
+            for (int i = 0; i < X.rows; i++)
+            {
+                // Compute the distance between the row of X and each of the centroids.
+                DoubleMatrix z = centroids.subRowVector(X.getRow(i));
+                
+                DoubleMatrix zy = DoubleMatrix.zeros(K);
+                // Iterate through each of the rows of z. Sums the element-wise distances from 
+                // each centroid, computing overall distance.
+                for (int k = 0; k < K; k++)
+                {
+                    // Iterate through the columns.
+                    for (int j = 0; j < z.columns; j++)
+                    {
+                        zy.put(k, zy.get(k) + Math.pow(z.get(k, j), 2));
+                    }
+                }
+
+                // Choose the weight to be the distance from the centroid closest to the
+                // Current vertex
+                weights.put(i, zy.min());
+            }
+
+            for (int i = 0; i < weights.length; i++)
+            {
+                // put back into weights - (distance * degree) ^ power (normally 3)
+                weights.put(i, Math.pow((weights.get(i) * graph.degreeArray[i]), power));
+            }
+
+            // This is where this method differs from the other initializtion method.
+            // Sum the weights, then choose a random number between 0 and the sum of the weights.
+            double weightSum = weights.sum();
+            int rnd = randomInt(0, (int)weightSum);
+            int newCentroid = 0;
+
+            // Subtract consecutive weights from the random number until one of them is bigger than the random number.
+            for (int i = 0; weights.get(i) < rnd; i++)
+            {
+                rnd -= weights.get(i); //Might be able to make this more efficient by eliminating the redundant weights.get call.
+                newCentroid = i; //Check to make sure this method works with Neo or Ivy.
+            }
+
+            centroidsComputed++;
+            centroids.putRow(centroidsComputed - 1, X.getRow(newCentroid));
+            // System.out.println("Centroid Calculated " + (centroidsComputed));
+        }
+        
+        return centroids; 
+    }
 }
+
