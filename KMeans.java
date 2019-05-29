@@ -41,7 +41,7 @@ public class KMeans
         X = formDataMatrix(adjMatrix);
 
         // Get the initial centroids.
-        initialCentroids = initCentroids(X, K, false);
+        initialCentroids = initCentroids(X, K, true);
 
         // Get the initial idx values.
         initialIdx = findClosestCentroids(X, initialCentroids, K);
@@ -66,7 +66,7 @@ public class KMeans
         X = formDataMatrix(adjMatrix);
 
         // Get the initial centroids.
-        initialCentroids = initCentroids(X, K, false);
+        initialCentroids = initCentroids(X, K, true);
 
         // Get the initial idx values.
         initialIdx = findClosestCentroids(X, initialCentroids, K);
@@ -85,7 +85,7 @@ public class KMeans
         maxIters = vertexCount / 5;
 
         // Initialize centroids
-        initialCentroids = initCentroids(X, K, false);
+        initialCentroids = initCentroids(X, K, true);
 
         // Get the initial idx values.
         initialIdx = findClosestCentroids(X, initialCentroids, K);
