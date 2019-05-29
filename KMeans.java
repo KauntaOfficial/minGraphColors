@@ -41,7 +41,7 @@ public class KMeans
         X = formDataMatrix(adjMatrix);
 
         // Get the initial centroids.
-        initialCentroids = initCentroids(X, K);
+        initialCentroids = initCentroids(X, K, false);
 
         // Get the initial idx values.
         initialIdx = findClosestCentroids(X, initialCentroids, K);
@@ -66,7 +66,7 @@ public class KMeans
         X = formDataMatrix(adjMatrix);
 
         // Get the initial centroids.
-        initialCentroids = initCentroids(X, K);
+        initialCentroids = initCentroids(X, K, false);
 
         // Get the initial idx values.
         initialIdx = findClosestCentroids(X, initialCentroids, K);
@@ -85,7 +85,7 @@ public class KMeans
         maxIters = vertexCount / 5;
 
         // Initialize centroids
-        initialCentroids = initCentroids(X, K);
+        initialCentroids = initCentroids(X, K, false);
 
         // Get the initial idx values.
         initialIdx = findClosestCentroids(X, initialCentroids, K);
@@ -271,9 +271,12 @@ public class KMeans
     }
 
     // Works perfectly fine afaik+
-    private DoubleMatrix initCentroids(DoubleMatrix X, int K)
+    private DoubleMatrix initCentroids(DoubleMatrix X, int K, boolean weighted)
     {
-        //return weightedInitCentroids(X, K);
+        // If weighted is desired, do this instead.
+        if (weighted)
+            return weightedInitCentroids(X, K);
+
         // Get a random row to start as the first centroid.
         int randidx = (int)randomInt(0, X.rows);
         DoubleMatrix centroids = new DoubleMatrix(K, X.columns);

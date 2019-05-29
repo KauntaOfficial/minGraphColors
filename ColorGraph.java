@@ -103,6 +103,12 @@ public class ColorGraph
         // Cluster Degree from largest to smallest, vertex degree from largest to smallest
         int[] cDegreeLSvDegreeLS = cDegreesLSvDegreesLS(clusterCount, graph, clusters, clusterSizes, clusterDegrees);
         int[] cDegreeLSvDegreeLSColors = color(cDegreeLSvDegreeLS, graph);
+
+        for (int i = 0; i < cDegreeLSvDegreeLS.length; i++)
+        {
+            System.out.println(cDegreeLSvDegreeLS[i]);
+        }
+
         int cDegreeLSvDegreeLSCount = determineSuccessAndCountDistict(cDegreeLSvDegreeLSColors, graph, cDegreeLSvDegreeLSColors.length);
         System.out.println("Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is " + cDegreeLSvDegreeLSCount);
 
@@ -433,7 +439,6 @@ public class ColorGraph
         for (int i = 0; i < clusterCount; i++)
         {
             int currentCluster = clusterSizeAccess.poll()[0];
-            //System.out.println(currentCluster);
 
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
             {
@@ -467,7 +472,6 @@ public class ColorGraph
         for (int i = 0; i < clusterCount; i++)
         {
             int currentCluster = clusterSizeAccess.poll()[0];
-            //System.out.println(currentCluster);
 
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
             {

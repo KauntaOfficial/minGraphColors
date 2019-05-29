@@ -4,6 +4,15 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+
+        {
+            "type":"java",
+            "name": "Debug (Launch) - ClusterGraph.java",
+            "request": "launch",
+            "mainClass": "ClusterGraph",
+            "args": "DSJC125.1.gr",
+            "flags": "-cp '.:jblas-1.2.4.jar'"
+        },
     
         {
             "type": "java",
