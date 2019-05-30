@@ -16,8 +16,19 @@ public class ClusterGraph
     {
         String file = args[0];
         File fFile = new File(file);
-        int initType = 0;
+        int initTypes = 5;
 
+        for (int i = 0; i < initTypes; i++)
+        {
+            doThings(file, fFile, i);
+            System.out.println();
+            System.out.println(" ----------------------------------------------------------------------------- ");
+            System.out.println();
+        }
+    }
+
+    public static void doThings(String file, File fFile, int initType) throws FileNotFoundException 
+    {
         KMeans colorGraph = new KMeans(file, initType);
         Graph graph =  new Graph(fFile);
 
