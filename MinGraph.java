@@ -126,10 +126,8 @@ public class MinGraph
         
         /* -------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
         // Weighted Limiting Randomness
-        vertexColors = new int[vertexCount];
         ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
         ArrayList<Integer> storedNodes = new ArrayList<Integer>();
-        ArrayList<Integer> storedNodesHypotheticalColors = new ArrayList<Integer>();
         ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
         int limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
         int[] storedWeights = new int[vertexCount];
@@ -148,10 +146,12 @@ public class MinGraph
         
         int[] temporaryStoredWeights = new int[vertexCount];
         
-        for(int timesToRun = 0; timesToRun < edgeCount/10; timesToRun++)
+        for(int timesToRun = 0; timesToRun < edgeCount/100; timesToRun++)
         {
+            vertexColors = new int[vertexCount];
             System.arraycopy(storedWeights, 0, temporaryStoredWeights, 0, storedWeights.length);
             listOfVertices.clear();
+            storedNodes.clear();
             double temporaryTotalWeight = totalWeight;
 
             for (int i = 0 ; i < temporaryStoredWeights.length; i++)
@@ -203,11 +203,17 @@ public class MinGraph
                         {
                             vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
 
-                            if (vertexColors[selectedElement] > limitingColorCount)
+                            if (vertexColors[selectedElement] >= limitingColorCount && j < vertexCount - 1)
                             {
                                 vertexColors[selectedElement] = 0;
                                 break;
                             }
+                        }
+
+                        if (vertexColors[selectedElement] < limitingColorCount && vertexColors[selectedElement] != 0)
+                        {
+                            storedNodes.remove(i);
+                            i--;
                         }
                     }
                 }
@@ -230,7 +236,7 @@ public class MinGraph
                 {
                     vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
                     
-                    if (vertexColors[selectedElement] > limitingColorCount - 1 && adjacentVertexColors.contains(0))
+                    if (vertexColors[selectedElement] >= limitingColorCount && adjacentVertexColors.contains(0))
                     {
                         vertexColors[selectedElement] = 0;
                         storedNodes.add(selectedElement);
@@ -266,12 +272,10 @@ public class MinGraph
         
         limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
         
-        for(int timesToRun = 0; timesToRun < edgeCount/10; timesToRun++)
+        for(int timesToRun = 0; timesToRun < edgeCount/100; timesToRun++)
         {
             vertexColors = new int[vertexCount];
-            adjacentVertexColors = new ArrayList<Integer>();
-            storedNodes = new ArrayList<Integer>();
-            storedNodesHypotheticalColors = new ArrayList<Integer>();
+            storedNodes.clear();
             
             Collections.shuffle(listOfVertices);
 
@@ -300,11 +304,17 @@ public class MinGraph
                         {
                             vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
 
-                            if (vertexColors[selectedElement] > limitingColorCount)
+                            if (vertexColors[selectedElement] >= limitingColorCount && j < vertexCount - 1)
                             {
                                 vertexColors[selectedElement] = 0;
                                 break;
                             }
+                        }
+
+                        if (vertexColors[selectedElement] < limitingColorCount && vertexColors[selectedElement] != 0)
+                        {
+                            storedNodes.remove(i);
+                            i--;
                         }
                     }
                 }
@@ -327,7 +337,7 @@ public class MinGraph
                 {
                     vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
                     
-                    if (vertexColors[selectedElement] > limitingColorCount - 1 && adjacentVertexColors.contains(0))
+                    if (vertexColors[selectedElement] >= limitingColorCount && adjacentVertexColors.contains(0))
                     {
                         vertexColors[selectedElement] = 0;
                         storedNodes.add(selectedElement);
