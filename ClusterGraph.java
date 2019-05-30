@@ -16,18 +16,19 @@ public class ClusterGraph
     {
         String file = args[0];
         File fFile = new File(file);
-        int initTypes = 5;
+        int initType = 0;
+        int initLimit = 5;
 
-        for (int i = 0; i < initTypes; i++)
+        for (int i = 0; i < initLimit; i++)
         {
-            doThings(file, fFile, i);
+            doThings(file, fFile, initType);
             System.out.println();
-            System.out.println(" ----------------------------------------------------------------------------- ");
+            System.out.println("---------------------------------------------------------------------------------------------");
             System.out.println();
-        }
+        } 
     }
 
-    public static void doThings(String file, File fFile, int initType) throws FileNotFoundException 
+    public static void doThings(String file, File fFile, int initType) throws FileNotFoundException
     {
         KMeans colorGraph = new KMeans(file, initType);
         Graph graph =  new Graph(fFile);
@@ -85,6 +86,7 @@ public class ClusterGraph
             }
         }
 
+        /*
         for (int i = 0; i < newIdxLists.length; i++)
         {
             for (int j = 0; j < newIdxLists[i].length; j++)
@@ -94,7 +96,7 @@ public class ClusterGraph
             if (newIdxLists[i].length > 0)
                 System.out.println();
         } 
-        System.out.println();
+        System.out.println(); */
         
         // Get the degrees of each of the clusters.
         int[] clusterDegrees = getClusterDegrees(nonZeroClusterCount, graph, clusters, clusterSizes);
