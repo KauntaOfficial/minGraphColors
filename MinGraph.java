@@ -51,6 +51,7 @@ public class MinGraph
     public static int[] colorGraph(ArrayList<Integer> colorOrdering, int vc, Graph inputGraph)
     {
         int[] vertexColors = new int[vc];
+        Arrays.fill(vertexColors, -1);
         
         for (int i = 0; i < colorOrdering.size(); i++) 
         {
@@ -153,7 +154,7 @@ public class MinGraph
                 runOrdering.addAll(nodesStoredByDegrees.get(i));
             }
             int[] runVertexColors = colorGraph(runOrdering, vertexCount, inputGraph);
-            if (countDistinct(runVertexColors, runVertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
+            if (timesToRun == 0 || countDistinct(runVertexColors, runVertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
             {
                 System.arraycopy(runVertexColors, 0, optimumVertexColors, 0, runVertexColors.length);
             }
