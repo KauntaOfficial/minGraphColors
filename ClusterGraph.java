@@ -16,8 +16,9 @@ public class ClusterGraph
     {
         String file = args[0];
         File fFile = new File(file);
+        int initType = 0;
 
-        KMeans colorGraph = new KMeans(file);
+        KMeans colorGraph = new KMeans(file, initType);
         Graph graph =  new Graph(fFile);
 
         DoubleMatrix idx = colorGraph.runkMeans();
@@ -35,7 +36,7 @@ public class ClusterGraph
         // Create the new Identification matrix using the recluster and assimilate algorithm.
         for (int i = 0; i < reclusterCap; i++)
         {
-            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount);
+            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount, initType);
             newClusterCount = (int)newIdx.max() + 1;
         }
 
@@ -60,16 +61,6 @@ public class ClusterGraph
         int clusterTracker = 0;
         for (int i = 0; i < newIdxLists.length; i++)
         {
-            /*if (newIdxLists[i].length > 0)
-            {
-                for (int j = 0; j < newIdxLists[i].length; j++)
-                {
-                    // This line is the one causing the issues, since newidx lists is annouing
-                    clusters.get(clusterTracker).add((int)newIdxLists[i].get(j));
-                    clusterSizes[clusterTracker]++;
-                }
-                clusterTracker++;
-            } */
             for (int j = 0; j < newIdxLists[i].length; j++)
             {
                 int currentVertex = (int)newIdxLists[i].get(j);
@@ -83,19 +74,6 @@ public class ClusterGraph
             }
         }
 
-        // Debugging the array list issue
-        /*for (int i = 0; i < clusters.size(); i++)
-        {
-            for (int j = 0; j < clusters.get(i).size(); j++)
-            {
-                System.out.print(clusters.get(i).get(j) + " ");
-            }
-            System.out.println();
-        }
-        System.out.println(); 
-
-        // Soon unneeded, nice for debugging tho.
-        System.out.println(nonZeroClusterCount); */
         for (int i = 0; i < newIdxLists.length; i++)
         {
             for (int j = 0; j < newIdxLists[i].length; j++)
@@ -150,12 +128,6 @@ public class ClusterGraph
 
         // Cluster Degree from largest to smallest, vertex degree from largest to smallest
         int[] cDegreeLSvDegreeLS = cDegreesLSvDegreesLS(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
-        
-        //for (int i = 0; i < cDegreeLSvDegreeLS.length; i++)
-        //{
-        //    System.out.println(cDegreeLSvDegreeLS[i]);
-        //}
-        
         int[] cDegreeLSvDegreeLSColors = color(cDegreeLSvDegreeLS, graph);
         int cDegreeLSvDegreeLSCount = determineSuccessAndCountDistict(cDegreeLSvDegreeLSColors, graph, cDegreeLSvDegreeLSColors.length);
         System.out.println("Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is " + cDegreeLSvDegreeLSCount);
@@ -179,7 +151,7 @@ public class ClusterGraph
         System.out.println("Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is " + cDegreeSLvDegreeLSCount);
     }
 
-    public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount) 
+    public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount, int initType) 
     {
         
         DoubleMatrix greaterThanAverage = clustersGreaterThanAverage(clusterCount, idx.length, idx);
@@ -227,7 +199,7 @@ public class ClusterGraph
         for (int i = 0; i < greaterThanAverage.length; i++)
         {
             if (greaterThanAverage.get(i) == 1.0)
-                identities[idenTracker] = recluster(averageClusterSize, dataSets[i]).dup();
+                identities[idenTracker] = recluster(averageClusterSize, dataSets[i], initType).dup();
         }
         // Now that it's reclutered once, i have to do it recursively until all of them are below the average.
         // Actually, reassimilate first, and then recluster. Should be easier.
@@ -237,9 +209,9 @@ public class ClusterGraph
         return newIdx;
     }
 
-    public static DoubleMatrix recluster(int avg, DoubleMatrix data)
+    public static DoubleMatrix recluster(int avg, DoubleMatrix data, int initType)
     {
-        KMeans coloring = new KMeans(data);
+        KMeans coloring = new KMeans(data, initType);
         DoubleMatrix idx = coloring.runkMeans();
         return idx;
     }

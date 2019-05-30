@@ -9,25 +9,37 @@ import java.util.*;
 public class CentroidInit
 {
     public DoubleMatrix X;
-    public int clusterCount;
+    public int K;
     public Graph graph;
     public DoubleMatrix centroids;
+    public int initType;
+    public int power;
 
     // Init type designates the type of initialization we want for this.
-    public CentroidInit(Graph graph_, int clusterCount_, DoubleMatrix X_, int initType)
+    public CentroidInit(Graph graph_, int K_, DoubleMatrix X_, int initType_, int power_)
     {
         graph = graph_;
-        clusterCount = clusterCount_;
+        K = K_;
         X = X_;
+        initType = initType_;
+        power = power_;
 
         switch (initType)
         {
             case 0: 
-                initCentroids(X, clusterCount);
+                centroids = initCentroids();
                 break;
             case 1:
-                // the third parameter is the desired power that the weights are multiplied by. Higher power means more chance for the next node to be further away.
-                weightedInitCentroids(X, clusterCount, 3);
+                centroids = weightedInitCentroids();
+                break;
+            case 2:
+                centroids = highestDegreeStart();
+                break;
+            case 3:
+                centroids = largestDegrees();
+                break;
+            case 4:
+                centroids = smallestDegrees();
                 break;
         }
     }
@@ -39,7 +51,7 @@ public class CentroidInit
     }
 
     // Basic Initialization - easiest one to do. Chooses the vertex furthest away from all of the centroids to be the next one.
-    private DoubleMatrix initCentroids(DoubleMatrix X, int K)
+    private DoubleMatrix initCentroids()
     {
         // Get a random row to start as the first centroid.
         int randidx = (int)randomInt(0, X.rows);
@@ -90,7 +102,7 @@ public class CentroidInit
     }
 
     // Same thing as init centroids, but the next centroids are chosen using a weighted random selection, rather than the one farthest away.
-    private DoubleMatrix weightedInitCentroids(DoubleMatrix X, int K, int power)
+    private DoubleMatrix weightedInitCentroids()
     {
         // Get a random row to start as the first centroid.
         int randidx = (int)randomInt(0, X.rows);
@@ -154,7 +166,7 @@ public class CentroidInit
     }
 
     // First centroid is the one with the highest degree. Chooses next centroid by combination of distance and degree - multiplication
-    private DoubleMatrix highestDegreeStart(DoubleMatrix X, int K, Graph graph, int power)
+    private DoubleMatrix highestDegreeStart()
     {
         // Find the vertex with the highest degree.
         int maxDegree = 0;
@@ -225,6 +237,56 @@ public class CentroidInit
         }
         
         return centroids; 
+    }
+
+    // Take the vertices with the K largest degrees and use them as the initial centroids. - very very fast compared to other initializations.
+    private DoubleMatrix largestDegrees()
+    {
+        DoubleMatrix centroids = new DoubleMatrix(K, X.columns);
+
+        PriorityQueue<Integer[]> degreeAccess = new PriorityQueue<>((Integer[] x, Integer[] y) -> y[1] - x[1]);
+        for (int i = 0; i < graph.degreeArray.length; i++)
+        {
+            Integer[] toOffer = new Integer[2];
+            toOffer[0] = i;
+            toOffer[1] = graph.degreeArray[i];
+            degreeAccess.offer(toOffer);
+        }
+
+        int centroidsComputed = 0;
+
+        while (centroidsComputed < K)
+        {
+            int nextVertex = degreeAccess.poll()[0];
+            centroids.putRow(centroidsComputed, X.getRow(nextVertex));
+        }
+
+        return centroids;
+    }
+
+    // Takes K vertices with the smallest degrees and uses them.
+    private DoubleMatrix smallestDegrees()
+    {
+        DoubleMatrix centroids = new DoubleMatrix(K, X.columns);
+
+        PriorityQueue<Integer[]> degreeAccess = new PriorityQueue<>((Integer[] x, Integer[] y) -> x[1] - y[1]);
+        for (int i = 0; i < graph.degreeArray.length; i++)
+        {
+            Integer[] toOffer = new Integer[2];
+            toOffer[0] = i;
+            toOffer[1] = graph.degreeArray[i];
+            degreeAccess.offer(toOffer);
+        }
+
+        int centroidsComputed = 0;
+
+        while (centroidsComputed < K)
+        {
+            int nextVertex = degreeAccess.poll()[0];
+            centroids.putRow(centroidsComputed, X.getRow(nextVertex));
+        }
+
+        return centroids;
     }
 }
 

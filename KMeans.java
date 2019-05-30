@@ -20,10 +20,10 @@ public class KMeans
     public DoubleMatrix X;
     private DoubleMatrix initialCentroids;
     private DoubleMatrix initialIdx;
-    private DoubleMatrix finalIdx; 
+    private DoubleMatrix finalIdx;
 
     // Second constructor without default values. Allows explicit definition of K and MaxIters.
-    public KMeans(String file, int K_, int maxIters_) throws FileNotFoundException
+    public KMeans(String file, int K_, int maxIters_, int initType) throws FileNotFoundException
     {
         inputFile = new File(file);
         inputGraph = new Graph(inputFile);
@@ -41,14 +41,16 @@ public class KMeans
         X = formDataMatrix(adjMatrix);
 
         // Get the initial centroids.
-        initialCentroids = initCentroids(X, K, true);
+        int power = 3;
+        CentroidInit initCentroids = new CentroidInit(inputGraph, K, X, initType, power);
+        initialCentroids = initCentroids.centroids;
 
         // Get the initial idx values.
         initialIdx = findClosestCentroids(X, initialCentroids, K);
     }
 
     //Default constructor, still requires a file.
-    public KMeans(String file) throws FileNotFoundException
+    public KMeans(String file, int initType) throws FileNotFoundException
     {
         // Initialize the simple stuff
         inputFile = new File(file);
@@ -60,20 +62,22 @@ public class KMeans
         K = (int)Math.sqrt(vertexCount) * 2;
 
         // max iters the the maximum iterations of the algorithm.
-        maxIters = vertexCount / 5;
+        maxIters = vertexCount / 4;
 
         //Create X from the adj matrix
         X = formDataMatrix(adjMatrix);
 
         // Get the initial centroids.
-        initialCentroids = initCentroids(X, K, true);
+        int power = 3;
+        CentroidInit initCentroids = new CentroidInit(inputGraph, K, X, initType, power);
+        initialCentroids = initCentroids.centroids;
 
         // Get the initial idx values.
         initialIdx = findClosestCentroids(X, initialCentroids, K);
     }
 
     // Works as long as data is in the same format as it would be after makin the adj matrix.
-    public KMeans(DoubleMatrix data)
+    public KMeans(DoubleMatrix data, int initType)
     {
         // Initialize simple stuff
         X = data;
@@ -82,10 +86,12 @@ public class KMeans
         // K is the amount of centroids we want.
         K = (int)Math.sqrt(vertexCount) * 2;
 
-        maxIters = vertexCount / 5;
+        maxIters = vertexCount / 4;
 
-        // Initialize centroids
-        initialCentroids = initCentroids(X, K, true);
+        // Get the initial centroids.
+        int power = 3;
+        CentroidInit initCentroids = new CentroidInit(inputGraph, K, X, initType, power);
+        initialCentroids = initCentroids.centroids;
 
         // Get the initial idx values.
         initialIdx = findClosestCentroids(X, initialCentroids, K);
