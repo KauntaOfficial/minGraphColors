@@ -48,35 +48,33 @@ public class MinGraph
         return res;
     } 
    
-    public int colorGraph(int[][] inputArray)
+    public static int[] colorGraph(ArrayList<Integer> colorOrdering, int vc, Graph inputGraph)
     {
-        int[] vertexColors = new int[vertexCount];
-        Arrays.fill(vertexColors, -1);
+        int[] vertexColors = new int[vc];
         
-        //Iterate through every node in the adjacencyList.
-        for (int counter = inputArray.length - 1; counter >= 0; counter--)
+        for (int i = 0; i < colorOrdering.size(); i++) 
         {
-            //Create an arraylist to store vertex colors
+            int selectedElement = colorOrdering.get(i);
+
             ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
 
-            //Add adjacent node colors into the arraylist.
-            for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[inputArray[counter][0]].length; adjacentNode++)
+            //Adding adjacent node colors to arraylist.
+            for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
             {
-                adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[inputArray[counter][0]][adjacentNode]]);
+                adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
             }
 
-            //Initialize the node's color to 0 because unprocessed nodes are originally -1.
-            vertexColors[inputArray[counter][0]] = 0;
+            //Initialize every element's color to 0.
+            vertexColors[selectedElement] = 0;
 
             //If adjacent nodes have the same color as the current node, increment those colors by one.
-            while (adjacentVertexColors.contains(vertexColors[inputArray[counter][0]]))
+            while (adjacentVertexColors.contains(vertexColors[selectedElement]))
             {
-                vertexColors[inputArray[counter][0]] = vertexColors[inputArray[counter][0]] + 1;
+                vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
             }
         }
         
-        if (optimumVertexColors.length == 0 || countDistinct(vertexColors, vertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
-            System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
+        return vertexColors;
     }
        
     public static void main(String[] args) throws CloneNotSupportedException
@@ -128,7 +126,7 @@ public class MinGraph
             }
         }   
         
-        // Sort the numbers into groups by their degrees
+        // Sort the numbers into groups by their degrees, Step 1
         int currentDegree = -1;
         int currentIndex = -1;
         ArrayList<ArrayList<Integer>> nodesStoredByDegrees = new ArrayList<ArrayList<Integer>>();
@@ -140,57 +138,26 @@ public class MinGraph
             {
                 currentDegree = nodeDegrees[i][1];
                 currentIndex++;
-                nodesStoredByDegrees.get(currentIndex).add(nodeDegrees[0]);
+                nodesStoredByDegrees.add(new ArrayList<Integer>());
             }
+            nodesStoredByDegrees.get(currentIndex).add(nodeDegrees[i][0]);
         }   
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        //Iterate through every node in the adjacencyList.
-        for (int counter = nodeDegrees.length - 1; counter >= 0; counter--)
+        // randomly shuffle the groups to make new orderings multiple times
+        for (int timesToRun = 0; timesToRun < 10; timesToRun++)
         {
-            //Create an arraylist to store vertex colors
-            ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
-
-            //Add adjacent node colors into the arraylist.
-            for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[nodeDegrees[counter][0]].length; adjacentNode++)
-            {
-                adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[nodeDegrees[counter][0]][adjacentNode]]);
+            ArrayList<Integer> runOrdering = new ArrayList<Integer>();
+            for (int i = 0; i < nodesStoredByDegrees.size(); i++)
+            {    
+                Collections.shuffle(nodesStoredByDegrees.get(i));
+                runOrdering.addAll(nodesStoredByDegrees.get(i));
             }
-
-            //Initialize the node's color to 0 because unprocessed nodes are originally -1.
-            vertexColors[nodeDegrees[counter][0]] = 0;
-
-            //If adjacent nodes have the same color as the current node, increment those colors by one.
-            while (adjacentVertexColors.contains(vertexColors[nodeDegrees[counter][0]]))
+            int[] runVertexColors = colorGraph(runOrdering, vertexCount, inputGraph);
+            if (countDistinct(runVertexColors, runVertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
             {
-                vertexColors[nodeDegrees[counter][0]] = vertexColors[nodeDegrees[counter][0]] + 1;
+                System.arraycopy(runVertexColors, 0, optimumVertexColors, 0, runVertexColors.length);
             }
         }
-        
-        System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
-        
         
         if (colorTest(optimumVertexColors, inputGraph))
             System.out.println("Success!");
