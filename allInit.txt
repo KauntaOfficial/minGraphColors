@@ -1,120 +1,120 @@
 
 Success!
-Colors found by clusters l to s vertices linear is 127
+Colors found by clusters l to s vertices linear is 8
 Success!
-Colors found by clusters s to l vertices linear is 124
+Colors found by clusters s to l vertices linear is 7
 Success!
-Colors found by linear through clusters and vertices is 125
+Colors found by linear through clusters and vertices is 7
 Success!
-Colors found by linear is 122
+Colors found by linear is 8
 Success!
-Colors found by degree from largest to smallest is 122
+Colors found by degree from largest to smallest is 6
 Success!
-Colors found by degree from smallest to largest is 129
+Colors found by degree from smallest to largest is 10
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 126
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 8
 Success!
-Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is 127
+Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is 8
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is 126
+Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is 8
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 122
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 8
 
 ---------------------------------------------------------------------------------------------
 
 
 Success!
-Colors found by clusters l to s vertices linear is 125
+Colors found by clusters l to s vertices linear is 9
 Success!
-Colors found by clusters s to l vertices linear is 124
+Colors found by clusters s to l vertices linear is 9
 Success!
-Colors found by linear through clusters and vertices is 125
+Colors found by linear through clusters and vertices is 7
 Success!
-Colors found by linear is 122
+Colors found by linear is 8
 Success!
-Colors found by degree from largest to smallest is 122
+Colors found by degree from largest to smallest is 6
 Success!
-Colors found by degree from smallest to largest is 129
+Colors found by degree from smallest to largest is 10
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 129
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 9
 Success!
-Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is 128
+Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is 8
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is 125
+Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is 9
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 125
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 8
 
 ---------------------------------------------------------------------------------------------
 
 
 Success!
-Colors found by clusters l to s vertices linear is 124
+Colors found by clusters l to s vertices linear is 9
 Success!
-Colors found by clusters s to l vertices linear is 126
+Colors found by clusters s to l vertices linear is 7
 Success!
-Colors found by linear through clusters and vertices is 123
+Colors found by linear through clusters and vertices is 8
 Success!
-Colors found by linear is 122
+Colors found by linear is 8
 Success!
-Colors found by degree from largest to smallest is 122
+Colors found by degree from largest to smallest is 6
 Success!
-Colors found by degree from smallest to largest is 129
+Colors found by degree from smallest to largest is 10
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 122
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 8
 Success!
-Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is 125
+Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is 7
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is 125
+Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is 8
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 126
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 8
 
 ---------------------------------------------------------------------------------------------
 
 
 Success!
-Colors found by clusters l to s vertices linear is 125
+Colors found by clusters l to s vertices linear is 8
 Success!
-Colors found by clusters s to l vertices linear is 124
+Colors found by clusters s to l vertices linear is 8
 Success!
-Colors found by linear through clusters and vertices is 125
+Colors found by linear through clusters and vertices is 7
 Success!
-Colors found by linear is 122
+Colors found by linear is 8
 Success!
-Colors found by degree from largest to smallest is 122
+Colors found by degree from largest to smallest is 6
 Success!
-Colors found by degree from smallest to largest is 129
+Colors found by degree from smallest to largest is 10
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 127
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 9
 Success!
-Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is 125
+Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is 8
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is 123
+Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is 8
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 128
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 8
 
 ---------------------------------------------------------------------------------------------
 
 
 Success!
-Colors found by clusters l to s vertices linear is 125
+Colors found by clusters l to s vertices linear is 8
 Success!
-Colors found by clusters s to l vertices linear is 123
+Colors found by clusters s to l vertices linear is 7
 Success!
-Colors found by linear through clusters and vertices is 124
+Colors found by linear through clusters and vertices is 7
 Success!
-Colors found by linear is 122
+Colors found by linear is 8
 Success!
-Colors found by degree from largest to smallest is 122
+Colors found by degree from largest to smallest is 6
 Success!
-Colors found by degree from smallest to largest is 129
+Colors found by degree from smallest to largest is 10
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 125
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 8
 Success!
-Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is 125
+Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is 8
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is 125
+Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is 8
 Success!
-Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 124
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 8
 
 ---------------------------------------------------------------------------------------------
 
