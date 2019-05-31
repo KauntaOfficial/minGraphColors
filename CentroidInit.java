@@ -451,7 +451,6 @@ public class CentroidInit
         }
 
         int centroidsComputed = 0;
-        System.out.println(degreeAccess.size());
 
         while (centroidsComputed < K)
         {
