@@ -5,8 +5,13 @@ import java.util.ArrayList;
 import java.lang.Math;
 import java.util.Collections;
 
-public class MinGraph
+public class MinGraph implements Runnable
 {
+    private static Graph inputGraph;
+    private static int vertexCount;
+    private static int edgeCount;
+    private static int[] optimumVertexColors;
+
     public static boolean colorTest(int[] colors, Graph g)
     {
         for(int u = 0; u < g.adjacencyList.length; u++)
@@ -46,19 +51,19 @@ public class MinGraph
         } 
         
         return res;
-    } 
+    }
     
-    public static void main(String[] args) throws CloneNotSupportedException
+    public static void main(String[] args) throws CloneNotSupportedException, InterruptedException
     {
         //Create a new graph to manipulate.
-        Graph inputGraph = new Graph();
+        inputGraph = new Graph();
         
         //Store the number of vertices in the graph to make arrays of vertex colors later.
-        int vertexCount = inputGraph.getVertexCount();
-        int edgeCount = inputGraph.edgeCount;
+        vertexCount = inputGraph.getVertexCount();
+        edgeCount = inputGraph.edgeCount;
          
         //Create an array to store the best vertex color combination.
-        int[] optimumVertexColors = new int[vertexCount];
+        optimumVertexColors = new int[vertexCount];
         
         /* Eppley - Ivy Algorithm */
         
@@ -126,6 +131,126 @@ public class MinGraph
         
         /* -------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
         // Weighted Limiting Randomness
+        
+        Thread weighted = new Thread(new MinGraph(), "Weighted");
+        weighted.start();
+        
+        /* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+        // Limiting number of colors
+    
+        ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
+        ArrayList<Integer> storedNodes = new ArrayList<Integer>();
+        ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
+        int limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
+    
+        //Add integers that correspond to the nodes of a graph to an arraylist.
+        listOfVertices = new ArrayList<Integer>();
+    
+        for (int i = 0; i < vertexCount; i++)
+        {
+            listOfVertices.add(i);
+        }
+        
+        limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
+        
+        for(int timesToRun = 0; timesToRun < edgeCount/100; timesToRun++)
+        {
+            vertexColors = new int[vertexCount];
+            storedNodes.clear();
+            
+            Collections.shuffle(listOfVertices);
+
+            //Go through every vertex randomly.
+            for (int j = 0; j < vertexCount; j++)
+            {
+                if (!storedNodes.isEmpty())
+                {
+                    for (int i = 0; i < storedNodes.size(); i++)
+                    {
+                        int selectedElement = storedNodes.get(i);
+
+                        adjacentVertexColors = new ArrayList<Integer>();
+
+                        //Adding adjacent node colors to arraylist.
+                        for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
+                        {
+                            adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
+                        }
+
+                        //Initialize every element's color to 0.
+                        vertexColors[selectedElement] = 0;
+
+                        //If adjacent nodes have the same color as the current node, increment those colors by one.
+                        while (adjacentVertexColors.contains(vertexColors[selectedElement]))
+                        {
+                            vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
+
+                            if (vertexColors[selectedElement] >= limitingColorCount && j < vertexCount - 1)
+                            {
+                                vertexColors[selectedElement] = 0;
+                                break;
+                            }
+                        }
+
+                        if (vertexColors[selectedElement] < limitingColorCount && vertexColors[selectedElement] != 0)
+                        {
+                            storedNodes.remove(i);
+                            i--;
+                        }
+                    }
+                }
+                
+                int selectedElement = listOfVertices.get(j);
+
+                adjacentVertexColors = new ArrayList<Integer>();
+
+                //Adding adjacent node colors to arraylist.
+                for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
+                {
+                    adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
+                }
+
+                //Initialize every element's color to 0.
+                vertexColors[selectedElement] = 0;
+
+                //If adjacent nodes have the same color as the current node, increment those colors by one.
+                while (adjacentVertexColors.contains(vertexColors[selectedElement]))
+                {
+                    vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
+                    
+                    if (vertexColors[selectedElement] >= limitingColorCount && adjacentVertexColors.contains(0))
+                    {
+                        vertexColors[selectedElement] = 0;
+                        storedNodes.add(selectedElement);
+                        break;
+                    }
+                } 
+            }
+
+            if (countDistinct(vertexColors, vertexColors.length) <= limitingColorCount)
+            {
+                //This array copy is good for large datasets.
+                System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
+                System.out.println("BetterL");
+                limitingColorCount--;
+            }
+        }
+        
+        /* ------------------------------------------------------------------------------------------------------------------------------------------------*/
+        
+        weighted.join();
+        
+        if (colorTest(optimumVertexColors, inputGraph))
+            System.out.println("Success!");
+            
+        System.out.println(countDistinct(optimumVertexColors, optimumVertexColors.length));
+        
+        for(int color: optimumVertexColors)
+            System.out.print(color + " ");                     
+    }
+
+    public void run()
+    {
         ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
         ArrayList<Integer> storedNodes = new ArrayList<Integer>();
         ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
@@ -148,7 +273,7 @@ public class MinGraph
         
         for(int timesToRun = 0; timesToRun < edgeCount/100; timesToRun++)
         {
-            vertexColors = new int[vertexCount];
+            int[] vertexColors = new int[vertexCount];
             System.arraycopy(storedWeights, 0, temporaryStoredWeights, 0, storedWeights.length);
             listOfVertices.clear();
             storedNodes.clear();
@@ -253,118 +378,5 @@ public class MinGraph
                 limitingColorCount--;
             }
         }
-   
-        
-                      
-        
-        
-        /* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-        // Limiting number of colors
-    
-    
-        //Add integers that correspond to the nodes of a graph to an arraylist.
-        listOfVertices = new ArrayList<Integer>();
-    
-        for (int i = 0; i < vertexCount; i++)
-        {
-            listOfVertices.add(i);
-        }
-        
-        limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
-        
-        for(int timesToRun = 0; timesToRun < edgeCount/100; timesToRun++)
-        {
-            vertexColors = new int[vertexCount];
-            storedNodes.clear();
-            
-            Collections.shuffle(listOfVertices);
-
-            //Go through every vertex randomly.
-            for (int j = 0; j < vertexCount; j++)
-            {
-                if (!storedNodes.isEmpty())
-                {
-                    for (int i = 0; i < storedNodes.size(); i++)
-                    {
-                        int selectedElement = storedNodes.get(i);
-
-                        adjacentVertexColors = new ArrayList<Integer>();
-
-                        //Adding adjacent node colors to arraylist.
-                        for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
-                        {
-                            adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
-                        }
-
-                        //Initialize every element's color to 0.
-                        vertexColors[selectedElement] = 0;
-
-                        //If adjacent nodes have the same color as the current node, increment those colors by one.
-                        while (adjacentVertexColors.contains(vertexColors[selectedElement]))
-                        {
-                            vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
-
-                            if (vertexColors[selectedElement] >= limitingColorCount && j < vertexCount - 1)
-                            {
-                                vertexColors[selectedElement] = 0;
-                                break;
-                            }
-                        }
-
-                        if (vertexColors[selectedElement] < limitingColorCount && vertexColors[selectedElement] != 0)
-                        {
-                            storedNodes.remove(i);
-                            i--;
-                        }
-                    }
-                }
-                
-                int selectedElement = listOfVertices.get(j);
-
-                adjacentVertexColors = new ArrayList<Integer>();
-
-                //Adding adjacent node colors to arraylist.
-                for (int adjacentNode = 0; adjacentNode < inputGraph.adjacencyList[selectedElement].length; adjacentNode++)
-                {
-                    adjacentVertexColors.add(vertexColors[inputGraph.adjacencyList[selectedElement][adjacentNode]]);
-                }
-
-                //Initialize every element's color to 0.
-                vertexColors[selectedElement] = 0;
-
-                //If adjacent nodes have the same color as the current node, increment those colors by one.
-                while (adjacentVertexColors.contains(vertexColors[selectedElement]))
-                {
-                    vertexColors[selectedElement] = vertexColors[selectedElement] + 1;
-                    
-                    if (vertexColors[selectedElement] >= limitingColorCount && adjacentVertexColors.contains(0))
-                    {
-                        vertexColors[selectedElement] = 0;
-                        storedNodes.add(selectedElement);
-                        break;
-                    }
-                } 
-            }
-
-            if (countDistinct(vertexColors, vertexColors.length) <= limitingColorCount)
-            {
-                //This array copy is good for large datasets.
-                System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
-                System.out.println("BetterL");
-                limitingColorCount--;
-            }
-        }
-        
-        /* ------------------------------------------------------------------------------------------------------------------------------------------------*/
-        
-
-        
-        if (colorTest(optimumVertexColors, inputGraph))
-            System.out.println("Success!");
-            
-        System.out.println(countDistinct(optimumVertexColors, optimumVertexColors.length));
-        
-        for(int color: optimumVertexColors)
-            System.out.print(color + " ");                     
     }
 }
