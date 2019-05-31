@@ -161,43 +161,6 @@ public class ClusterGraph
 
         int greaterThanAverageCount = (int)greaterThanAverage.sum();
 
-        
-        
-        // Create a list of datasets to act as the new data to create more, smaller clusters.
-        /*DoubleMatrix[] dataSets = new DoubleMatrix[clusterCount];
-        for (int i = 0; i < dataSets.length; i++)
-        {
-            dataSets[i] = DoubleMatrix.zeros(1, colorGraph.X.columns);
-        }
-
-        // Get all of the data sets for all of the clusters, putting them into data sets.
-        // Due to the way the data is stored, the lesser data points will be first, meaning that if vertex 2 is the first one in
-        // cluter 5, dataSet[5].get(0) will be the data for vertex 2 (since the clusters start at 0). This is why going through the list in 
-        // alphabetical order is very important, otherwise the data will be messed up.
-        // As a result, remember to add a method to recreate a singular idx.
-
-        // 
-        for (int i = 0; i < idx.length; i++)
-        {
-            //// // System.out.println("Dataset " + i + " found.");
-            //int groupAtLocation = (int)idx.get(i);
-            // Create a temporary matrix for this.
-            DoubleMatrix temp = dataSets[groupAtLocation].dup();
-            // Resize the data sets matrix for this group.
-            dataSets[groupAtLocation].resize(dataSets[groupAtLocation].rows + 1, dataSets[groupAtLocation].columns);76
-
-            for (int j = 0; j < temp.rows; j++)
-            {
-                dataSets[groupAtLocation].putRow(j, temp.getRow(j));
-            }
-
-            dataSets[groupAtLocation].putRow(dataSets[groupAtLocation].rows - 1, colorGraph.X.getRow(i));
-        
-            int groupAtLocation = (int)idx.get(i);
-
-        } */
-
-
         // Done and working afaik.
         Graph[] subsetGraphs = new Graph[clusterCount];
         DoubleMatrix[] groupsLists = convertToGroupBasedLists(idx, clusterCount);
@@ -247,12 +210,15 @@ public class ClusterGraph
         //Create a list to store each of the resultant idxs, for later assimilation
         DoubleMatrix[] identities = new DoubleMatrix[greaterThanAverageCount];
 
-        // Need to make it so that it only puts in the right ones into the right identities slots.
+        // TODO - fix this so that only clusters with groups higher than average actually recluster.
         int idenTracker = 0;
         for (int i = 0; i < greaterThanAverage.length; i++)
         {
-            if (greaterThanAverage.get(i) == 1.0)
+            if (subsetGraphs[i].vertexCount > averageClusterSize)
+            {
                 identities[idenTracker] = recluster(averageClusterSize, subsetGraphs[i], initType, file).dup();
+                idenTracker++;
+            }
         }
         // Now that it's reclutered once, i have to do it recursively until all of them are below the average.
         // Actually, reassimilate first, and then recluster. Should be easier.
