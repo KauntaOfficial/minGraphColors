@@ -210,7 +210,6 @@ public class ClusterGraph
         //Create a list to store each of the resultant idxs, for later assimilation
         DoubleMatrix[] identities = new DoubleMatrix[greaterThanAverageCount];
 
-        // TODO - fix this so that only clusters with groups higher than average actually recluster.
         int idenTracker = 0;
         for (int i = 0; i < greaterThanAverage.length; i++)
         {
