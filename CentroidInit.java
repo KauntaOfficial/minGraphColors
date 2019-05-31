@@ -439,7 +439,7 @@ public class CentroidInit
     // Take the vertices with the K largest degrees and use them as the initial centroids. - very very fast compared to other initializations.
     private DoubleMatrix largestDegrees()
     {
-        DoubleMatrix centroids = new DoubleMatrix(K, X.columns);
+        DoubleMatrix centroids = DoubleMatrix.zeros(K, X.columns);
 
         PriorityQueue<Integer[]> degreeAccess = new PriorityQueue<>((Integer[] x, Integer[] y) -> y[1] - x[1]);
         for (int i = 0; i < graph.degreeArray.length; i++)
@@ -451,6 +451,7 @@ public class CentroidInit
         }
 
         int centroidsComputed = 0;
+        System.out.println(degreeAccess.size());
 
         while (centroidsComputed < K)
         {

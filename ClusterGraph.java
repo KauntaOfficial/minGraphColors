@@ -159,9 +159,7 @@ public class ClusterGraph
         
         DoubleMatrix greaterThanAverage = clustersGreaterThanAverage(clusterCount, idx.length, idx);
 
-        // // // System.out.println(greaterThanAverage);X
         int greaterThanAverageCount = (int)greaterThanAverage.sum();
-        // // System.out.println(greaterThanAverageCount);
 
         
         
@@ -206,18 +204,37 @@ public class ClusterGraph
 
         for (int i = 0; i < groupsLists.length; i++)
         {
-            PrintWriter writer = new PrintWriter("graphStorage.txt");
+            // Starting the hash at one allows for a simple check later to see if an element is in the array, just subract one during placement.
+            int hashTracker = 1;
+            int[] hashArray = new int[idx.length];
 
-            writer.println(groupsLists[i].length);
-            for (int j = 0; j < groupsLists.length; j++)
+            // Hash each element in this cluster, making sure that the vertices are now numbered 0 through n.
+            for (int j = 0; j < groupsLists[i].length; j++)
             {
                 int currentVertex = (int)groupsLists[i].get(j);
-                writer.print(currentVertex);
+                hashArray[currentVertex] = hashTracker;
+                hashTracker++;
+            }
+
+            PrintWriter writer = new PrintWriter("graphStorage.txt");
+
+            // Print out the number of vertices in this cluster.
+            writer.println(groupsLists[i].length);
+
+            // Iterate through each of the vertices in this cluster, putting their adjacency list along with them, all hashed as done before.
+            for (int j = 0; j < groupsLists[i].length; j++)
+            {
+                int currentVertex = (int)groupsLists[i].get(j);
+                // Subtract one because of the clever checking trick we implemented earlier.
+                writer.print(hashArray[currentVertex] - 1);
                 
                 for (int k = 0; k < graph.adjacencyList[currentVertex].length; k++)
                 {
-                    if (bSearch(groupsLists[i], graph.adjacencyList[currentVertex].length, (double)graph.adjacencyList[currentVertex][k]));
-                        writer.print(" " + graph.adjacencyList[currentVertex][k]);
+                    // Clever checking trick. If the vertex is not in this cluster it will not have a hash, aka a 0 hash. This makes it easy to check if it's in this array.
+                    if (hashArray[graph.adjacencyList[currentVertex][k]] >= 1)
+                    {
+                        writer.print(" " + (hashArray[graph.adjacencyList[currentVertex][k]] - 1));
+                    }
                 }
                 writer.println();
             }
@@ -226,10 +243,6 @@ public class ClusterGraph
             File subFile = new File("graphStorage.txt");
             subsetGraphs[i] = new Graph(subFile);
         }
-
-
-        // TODO - refactor following code so that it runs with a list of graphs instead of alist of double matrices holding data.
-
 
         //Create a list to store each of the resultant idxs, for later assimilation
         DoubleMatrix[] identities = new DoubleMatrix[greaterThanAverageCount];
@@ -704,8 +717,6 @@ public class ClusterGraph
         int[] order = new int[graph.vertexCount];
         int placeInOderTracker = 0;
 
-        System.out.println();
-
         // Create a priority Queue to store the cluster sizes. This is a max Heap
         PriorityQueue<Integer[]> clusterSizeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> y[1] - x[1]);
         for (int i = 0; i < clusterCount; i++)
@@ -752,7 +763,6 @@ public class ClusterGraph
         for (int i = 0; i < clusterCount; i++)
         {
             int currentCluster = clusterSizeAccess.poll()[0];
-            //System.out.println(currentCluster);
 
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
             {
