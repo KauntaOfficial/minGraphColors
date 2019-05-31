@@ -49,6 +49,26 @@ public class KMeans
         initialIdx = findClosestCentroids(X, initialCentroids, K);
     }
 
+    public KMeans(Graph graph, int initType)
+    {
+        inputGraph = graph;
+
+        adjMatrix = inputGraph.adjacencyMatrix;
+        vertexCount = inputGraph.getVertexCount();
+
+        K = (int)Math.sqrt(vertexCount) * 2;
+
+        maxIters = vertexCount / 4;
+
+        X = formDataMatrix(adjMatrix);
+
+        int power = 3;
+        CentroidInit initCentroids = new CentroidInit(inputGraph, K, X, initType, power);
+        initialCentroids = initCentroids.centroids;
+
+        initialIdx = findClosestCentroids(X, initialCentroids, K);
+    }
+
     //Default constructor, still requires a file.
     public KMeans(String file, int initType) throws FileNotFoundException
     {

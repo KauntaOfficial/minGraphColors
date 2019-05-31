@@ -1,6 +1,8 @@
 // Benjamin Chappell
 
 import java.lang.Math;
+import java.security.GeneralSecurityException;
+
 import org.jblas.*;
 import java.util.*;
 import javax.lang.model.util.ElementScanner6;
@@ -48,7 +50,7 @@ public class ClusterGraph
         // Create the new Identification matrix using the recluster and assimilate algorithm.
         for (int i = 0; i < reclusterCap; i++)
         {
-            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount, initType, file);
+            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount, initType, file, graph);
             newClusterCount = (int)newIdx.max() + 1;
         }
 
@@ -152,17 +154,19 @@ public class ClusterGraph
         System.out.println("Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is " + cDegreeSLvDegreeLSCount);
     }
 
-    public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount, int initType, String file) throws FileNotFoundException
+    public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount, int initType, String file, Graph graph) throws FileNotFoundException
     {
         
         DoubleMatrix greaterThanAverage = clustersGreaterThanAverage(clusterCount, idx.length, idx);
 
-        // // // System.out.println(greaterThanAverage);
+        // // // System.out.println(greaterThanAverage);X
         int greaterThanAverageCount = (int)greaterThanAverage.sum();
         // // System.out.println(greaterThanAverageCount);
 
+        
+        
         // Create a list of datasets to act as the new data to create more, smaller clusters.
-        DoubleMatrix[] dataSets = new DoubleMatrix[clusterCount];
+        /*DoubleMatrix[] dataSets = new DoubleMatrix[clusterCount];
         for (int i = 0; i < dataSets.length; i++)
         {
             dataSets[i] = DoubleMatrix.zeros(1, colorGraph.X.columns);
@@ -174,15 +178,15 @@ public class ClusterGraph
         // alphabetical order is very important, otherwise the data will be messed up.
         // As a result, remember to add a method to recreate a singular idx.
 
-        // TODO - make it so that this creates the degree array for each data set as well.
+        // 
         for (int i = 0; i < idx.length; i++)
         {
             //// // System.out.println("Dataset " + i + " found.");
-            int groupAtLocation = (int)idx.get(i);
+            //int groupAtLocation = (int)idx.get(i);
             // Create a temporary matrix for this.
             DoubleMatrix temp = dataSets[groupAtLocation].dup();
             // Resize the data sets matrix for this group.
-            dataSets[groupAtLocation].resize(dataSets[groupAtLocation].rows + 1, dataSets[groupAtLocation].columns);
+            dataSets[groupAtLocation].resize(dataSets[groupAtLocation].rows + 1, dataSets[groupAtLocation].columns);76
 
             for (int j = 0; j < temp.rows; j++)
             {
@@ -190,7 +194,42 @@ public class ClusterGraph
             }
 
             dataSets[groupAtLocation].putRow(dataSets[groupAtLocation].rows - 1, colorGraph.X.getRow(i));
+        
+            int groupAtLocation = (int)idx.get(i);
+
+        } */
+
+
+        // Done and working afaik.
+        Graph[] subsetGraphs = new Graph[clusterCount];
+        DoubleMatrix[] groupsLists = convertToGroupBasedLists(idx, clusterCount);
+
+        for (int i = 0; i < groupsLists.length; i++)
+        {
+            PrintWriter writer = new PrintWriter("graphStorage.txt");
+
+            writer.println(groupsLists[i].length);
+            for (int j = 0; j < groupsLists.length; j++)
+            {
+                int currentVertex = (int)groupsLists[i].get(j);
+                writer.print(currentVertex);
+                
+                for (int k = 0; k < graph.adjacencyList[currentVertex].length; k++)
+                {
+                    if (bSearch(groupsLists[i], graph.adjacencyList[currentVertex].length, (double)graph.adjacencyList[currentVertex][k]));
+                        writer.print(" " + graph.adjacencyList[currentVertex][k]);
+                }
+                writer.println();
+            }
+            writer.close();
+
+            File subFile = new File("graphStorage.txt");
+            subsetGraphs[i] = new Graph(subFile);
         }
+
+
+        // TODO - refactor following code so that it runs with a list of graphs instead of alist of double matrices holding data.
+
 
         //Create a list to store each of the resultant idxs, for later assimilation
         DoubleMatrix[] identities = new DoubleMatrix[greaterThanAverageCount];
@@ -200,7 +239,7 @@ public class ClusterGraph
         for (int i = 0; i < greaterThanAverage.length; i++)
         {
             if (greaterThanAverage.get(i) == 1.0)
-                identities[idenTracker] = recluster(averageClusterSize, dataSets[i], initType, file).dup();
+                identities[idenTracker] = recluster(averageClusterSize, subsetGraphs[i], initType, file).dup();
         }
         // Now that it's reclutered once, i have to do it recursively until all of them are below the average.
         // Actually, reassimilate first, and then recluster. Should be easier.
@@ -210,9 +249,9 @@ public class ClusterGraph
         return newIdx;
     }
 
-    public static DoubleMatrix recluster(int avg, DoubleMatrix data, int initType, String file) throws FileNotFoundException
+    public static DoubleMatrix recluster(int avg, Graph subgraph, int initType, String file) throws FileNotFoundException
     {
-        KMeans coloring = new KMeans(file, data, initType % 2);
+        KMeans coloring = new KMeans(subgraph, initType);
         DoubleMatrix idx = coloring.runkMeans();
         return idx;
     }
@@ -257,7 +296,7 @@ public class ClusterGraph
         return idx;
     }
 
-    // Like the loop that groups the data, but instead creates groups of 
+    // Like the loop that groups the data, but instead creates groups of the vertices that are in the groups. groupLists[0] contains all of the vertices in that cluster.
     public static DoubleMatrix[] convertToGroupBasedLists(DoubleMatrix idx, int K)
     {
         // Create a list of the groups to store everything.
@@ -285,6 +324,33 @@ public class ClusterGraph
         }
 
         return groupLists;
+    }
+
+    // Simple binary search.
+    public static boolean bSearch(int[] toSearch, int n, int target)
+    {
+        int l = 0;
+        int r = n - 1;
+
+        while (l <= r)
+        {
+            int m = (l + r) / 2;
+
+            if (toSearch[m] < target)
+            {
+                l = m + 1;
+            }
+            else if(toSearch[m] > target)
+            {
+                r = m - 1;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Simple binary search.
