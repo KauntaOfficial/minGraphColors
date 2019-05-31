@@ -77,8 +77,11 @@ public class KMeans
     }
 
     // Works as long as data is in the same format as it would be after makin the adj matrix.
-    public KMeans(DoubleMatrix data, int initType)
+    public KMeans(String file, DoubleMatrix data, int initType) throws FileNotFoundException
     {
+        inputFile = new File(file);
+        inputGraph = new Graph(inputFile);
+
         // Initialize simple stuff
         X = data;
         vertexCount = X.getRows();

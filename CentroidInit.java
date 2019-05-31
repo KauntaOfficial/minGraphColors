@@ -30,13 +30,13 @@ public class CentroidInit
                 centroids = initCentroids();
                 break;
             case 1:
-                centroids = lowestDegreeStart();
+                centroids = weightedInitCentroids();
                 break;
             case 2:
                 centroids = highestDegreeStart();
                 break;
             case 3:
-                centroids = weightedInitCentroids();
+                centroids = lowestDegreeStart();
                 break;
             case 4:
                 centroids = weightedLowestDegreeStart();
@@ -456,6 +456,7 @@ public class CentroidInit
         {
             int nextVertex = degreeAccess.poll()[0];
             centroids.putRow(centroidsComputed, X.getRow(nextVertex));
+            centroidsComputed++;
         }
 
         return centroids;
@@ -481,6 +482,7 @@ public class CentroidInit
         {
             int nextVertex = degreeAccess.poll()[0];
             centroids.putRow(centroidsComputed, X.getRow(nextVertex));
+            centroidsComputed++;
         }
 
         return centroids;

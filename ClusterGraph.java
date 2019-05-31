@@ -21,7 +21,7 @@ public class ClusterGraph
 
         for (int i = 0; i < initLimit; i++)
         {
-            doThings(file, fFile, initType);
+            doThings(file, fFile, i);
             System.out.println(" ----- " + i + " -----");
             System.out.println("---------------------------------------------------------------------------------------------");
             System.out.println();
@@ -48,7 +48,7 @@ public class ClusterGraph
         // Create the new Identification matrix using the recluster and assimilate algorithm.
         for (int i = 0; i < reclusterCap; i++)
         {
-            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount, initType);
+            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount, initType, file);
             newClusterCount = (int)newIdx.max() + 1;
         }
 
@@ -152,7 +152,7 @@ public class ClusterGraph
         System.out.println("Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is " + cDegreeSLvDegreeLSCount);
     }
 
-    public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount, int initType) 
+    public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount, int initType, String file) throws FileNotFoundException
     {
         
         DoubleMatrix greaterThanAverage = clustersGreaterThanAverage(clusterCount, idx.length, idx);
@@ -174,7 +174,7 @@ public class ClusterGraph
         // alphabetical order is very important, otherwise the data will be messed up.
         // As a result, remember to add a method to recreate a singular idx.
 
-        // This for loop is working correctly.
+        // TODO - make it so that this creates the degree array for each data set as well.
         for (int i = 0; i < idx.length; i++)
         {
             //// // System.out.println("Dataset " + i + " found.");
@@ -200,7 +200,7 @@ public class ClusterGraph
         for (int i = 0; i < greaterThanAverage.length; i++)
         {
             if (greaterThanAverage.get(i) == 1.0)
-                identities[idenTracker] = recluster(averageClusterSize, dataSets[i], initType).dup();
+                identities[idenTracker] = recluster(averageClusterSize, dataSets[i], initType, file).dup();
         }
         // Now that it's reclutered once, i have to do it recursively until all of them are below the average.
         // Actually, reassimilate first, and then recluster. Should be easier.
@@ -210,9 +210,9 @@ public class ClusterGraph
         return newIdx;
     }
 
-    public static DoubleMatrix recluster(int avg, DoubleMatrix data, int initType)
+    public static DoubleMatrix recluster(int avg, DoubleMatrix data, int initType, String file) throws FileNotFoundException
     {
-        KMeans coloring = new KMeans(data, initType);
+        KMeans coloring = new KMeans(file, data, initType % 2);
         DoubleMatrix idx = coloring.runkMeans();
         return idx;
     }
