@@ -1,6 +1,8 @@
 // Benjamin Chappell
 
 import java.lang.Math;
+import java.security.GeneralSecurityException;
+
 import org.jblas.*;
 import java.util.*;
 import javax.lang.model.util.ElementScanner6;
@@ -16,8 +18,21 @@ public class ClusterGraph
     {
         String file = args[0];
         File fFile = new File(file);
+        int initType = 0;
+        int initLimit = 8;
 
-        KMeans colorGraph = new KMeans(file);
+        for (int i = 0; i < initLimit; i++)
+        {
+            doThings(file, fFile, i);
+            System.out.println(" ----- " + i + " -----");
+            System.out.println("---------------------------------------------------------------------------------------------");
+            System.out.println();
+        } 
+    }
+
+    public static void doThings(String file, File fFile, int initType) throws FileNotFoundException
+    {
+        KMeans colorGraph = new KMeans(file, initType);
         Graph graph =  new Graph(fFile);
 
         DoubleMatrix idx = colorGraph.runkMeans();
@@ -27,7 +42,7 @@ public class ClusterGraph
 
         // Duplicated idx for easy use since I want to save the original idx at least for now.
         DoubleMatrix newIdx = idx.dup();
-        int reclusterCap = colorGraph.K / 4;
+        int reclusterCap = colorGraph.K / 2;
         int newClusterCount = clusterCount;
 
         // Continually recluster until all of the clusters are smaller than the average size, aka the square root of the amount of vertices.
@@ -35,7 +50,7 @@ public class ClusterGraph
         // Create the new Identification matrix using the recluster and assimilate algorithm.
         for (int i = 0; i < reclusterCap; i++)
         {
-            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount);
+            newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount, initType, file, graph);
             newClusterCount = (int)newIdx.max() + 1;
         }
 
@@ -60,16 +75,6 @@ public class ClusterGraph
         int clusterTracker = 0;
         for (int i = 0; i < newIdxLists.length; i++)
         {
-            /*if (newIdxLists[i].length > 0)
-            {
-                for (int j = 0; j < newIdxLists[i].length; j++)
-                {
-                    // This line is the one causing the issues, since newidx lists is annouing
-                    clusters.get(clusterTracker).add((int)newIdxLists[i].get(j));
-                    clusterSizes[clusterTracker]++;
-                }
-                clusterTracker++;
-            } */
             for (int j = 0; j < newIdxLists[i].length; j++)
             {
                 int currentVertex = (int)newIdxLists[i].get(j);
@@ -82,30 +87,6 @@ public class ClusterGraph
                 clusterTracker++;
             }
         }
-
-        // Debugging the array list issue
-        /*for (int i = 0; i < clusters.size(); i++)
-        {
-            for (int j = 0; j < clusters.get(i).size(); j++)
-            {
-                System.out.print(clusters.get(i).get(j) + " ");
-            }
-            System.out.println();
-        }
-        System.out.println(); 
-
-        // Soon unneeded, nice for debugging tho.
-        System.out.println(nonZeroClusterCount); */
-        for (int i = 0; i < newIdxLists.length; i++)
-        {
-            for (int j = 0; j < newIdxLists[i].length; j++)
-            {
-                System.out.print((int)newIdxLists[i].get(j) + " ");
-            }
-            if (newIdxLists[i].length > 0)
-                System.out.println();
-        } 
-        System.out.println();
         
         // Get the degrees of each of the clusters.
         int[] clusterDegrees = getClusterDegrees(nonZeroClusterCount, graph, clusters, clusterSizes);
@@ -150,12 +131,6 @@ public class ClusterGraph
 
         // Cluster Degree from largest to smallest, vertex degree from largest to smallest
         int[] cDegreeLSvDegreeLS = cDegreesLSvDegreesLS(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
-        
-        //for (int i = 0; i < cDegreeLSvDegreeLS.length; i++)
-        //{
-        //    System.out.println(cDegreeLSvDegreeLS[i]);
-        //}
-        
         int[] cDegreeLSvDegreeLSColors = color(cDegreeLSvDegreeLS, graph);
         int cDegreeLSvDegreeLSCount = determineSuccessAndCountDistict(cDegreeLSvDegreeLSColors, graph, cDegreeLSvDegreeLSColors.length);
         System.out.println("Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is " + cDegreeLSvDegreeLSCount);
@@ -179,55 +154,70 @@ public class ClusterGraph
         System.out.println("Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is " + cDegreeSLvDegreeLSCount);
     }
 
-    public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount) 
+    public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount, int initType, String file, Graph graph) throws FileNotFoundException
     {
         
         DoubleMatrix greaterThanAverage = clustersGreaterThanAverage(clusterCount, idx.length, idx);
 
-        // // // System.out.println(greaterThanAverage);
         int greaterThanAverageCount = (int)greaterThanAverage.sum();
-        // // System.out.println(greaterThanAverageCount);
 
-        // Create a list of datasets to act as the new data to create more, smaller clusters.
-        DoubleMatrix[] dataSets = new DoubleMatrix[clusterCount];
-        for (int i = 0; i < dataSets.length; i++)
+        // Done and working afaik.
+        Graph[] subsetGraphs = new Graph[clusterCount];
+        DoubleMatrix[] groupsLists = convertToGroupBasedLists(idx, clusterCount);
+
+        for (int i = 0; i < groupsLists.length; i++)
         {
-            dataSets[i] = DoubleMatrix.zeros(1, colorGraph.X.columns);
-        }
+            // Starting the hash at one allows for a simple check later to see if an element is in the array, just subract one during placement.
+            int hashTracker = 1;
+            int[] hashArray = new int[idx.length];
 
-        // Get all of the data sets for all of the clusters, putting them into data sets.
-        // Due to the way the data is stored, the lesser data points will be first, meaning that if vertex 2 is the first one in
-        // cluter 5, dataSet[5].get(0) will be the data for vertex 2 (since the clusters start at 0). This is why going through the list in 
-        // alphabetical order is very important, otherwise the data will be messed up.
-        // As a result, remember to add a method to recreate a singular idx.
-
-        // This for loop is working correctly.
-        for (int i = 0; i < idx.length; i++)
-        {
-            //// // System.out.println("Dataset " + i + " found.");
-            int groupAtLocation = (int)idx.get(i);
-            // Create a temporary matrix for this.
-            DoubleMatrix temp = dataSets[groupAtLocation].dup();
-            // Resize the data sets matrix for this group.
-            dataSets[groupAtLocation].resize(dataSets[groupAtLocation].rows + 1, dataSets[groupAtLocation].columns);
-
-            for (int j = 0; j < temp.rows; j++)
+            // Hash each element in this cluster, making sure that the vertices are now numbered 0 through n.
+            for (int j = 0; j < groupsLists[i].length; j++)
             {
-                dataSets[groupAtLocation].putRow(j, temp.getRow(j));
+                int currentVertex = (int)groupsLists[i].get(j);
+                hashArray[currentVertex] = hashTracker;
+                hashTracker++;
             }
 
-            dataSets[groupAtLocation].putRow(dataSets[groupAtLocation].rows - 1, colorGraph.X.getRow(i));
+            PrintWriter writer = new PrintWriter("graphStorage.txt");
+
+            // Print out the number of vertices in this cluster.
+            writer.println(groupsLists[i].length);
+
+            // Iterate through each of the vertices in this cluster, putting their adjacency list along with them, all hashed as done before.
+            for (int j = 0; j < groupsLists[i].length; j++)
+            {
+                int currentVertex = (int)groupsLists[i].get(j);
+                // Subtract one because of the clever checking trick we implemented earlier.
+                writer.print(hashArray[currentVertex] - 1);
+                
+                for (int k = 0; k < graph.adjacencyList[currentVertex].length; k++)
+                {
+                    // Clever checking trick. If the vertex is not in this cluster it will not have a hash, aka a 0 hash. This makes it easy to check if it's in this array.
+                    if (hashArray[graph.adjacencyList[currentVertex][k]] >= 1)
+                    {
+                        writer.print(" " + (hashArray[graph.adjacencyList[currentVertex][k]] - 1));
+                    }
+                }
+                writer.println();
+            }
+            writer.close();
+
+            File subFile = new File("graphStorage.txt");
+            subsetGraphs[i] = new Graph(subFile);
         }
 
         //Create a list to store each of the resultant idxs, for later assimilation
         DoubleMatrix[] identities = new DoubleMatrix[greaterThanAverageCount];
 
-        // Need to make it so that it only puts in the right ones into the right identities slots.
         int idenTracker = 0;
         for (int i = 0; i < greaterThanAverage.length; i++)
         {
-            if (greaterThanAverage.get(i) == 1.0)
-                identities[idenTracker] = recluster(averageClusterSize, dataSets[i]).dup();
+            if (subsetGraphs[i].vertexCount > averageClusterSize)
+            {
+                identities[idenTracker] = recluster(averageClusterSize, subsetGraphs[i], initType, file).dup();
+                idenTracker++;
+            }
         }
         // Now that it's reclutered once, i have to do it recursively until all of them are below the average.
         // Actually, reassimilate first, and then recluster. Should be easier.
@@ -237,9 +227,9 @@ public class ClusterGraph
         return newIdx;
     }
 
-    public static DoubleMatrix recluster(int avg, DoubleMatrix data)
+    public static DoubleMatrix recluster(int avg, Graph subgraph, int initType, String file) throws FileNotFoundException
     {
-        KMeans coloring = new KMeans(data);
+        KMeans coloring = new KMeans(subgraph, initType);
         DoubleMatrix idx = coloring.runkMeans();
         return idx;
     }
@@ -284,7 +274,7 @@ public class ClusterGraph
         return idx;
     }
 
-    // Like the loop that groups the data, but instead creates groups of 
+    // Like the loop that groups the data, but instead creates groups of the vertices that are in the groups. groupLists[0] contains all of the vertices in that cluster.
     public static DoubleMatrix[] convertToGroupBasedLists(DoubleMatrix idx, int K)
     {
         // Create a list of the groups to store everything.
@@ -312,6 +302,33 @@ public class ClusterGraph
         }
 
         return groupLists;
+    }
+
+    // Simple binary search.
+    public static boolean bSearch(int[] toSearch, int n, int target)
+    {
+        int l = 0;
+        int r = n - 1;
+
+        while (l <= r)
+        {
+            int m = (l + r) / 2;
+
+            if (toSearch[m] < target)
+            {
+                l = m + 1;
+            }
+            else if(toSearch[m] > target)
+            {
+                r = m - 1;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Simple binary search.
@@ -665,8 +682,6 @@ public class ClusterGraph
         int[] order = new int[graph.vertexCount];
         int placeInOderTracker = 0;
 
-        System.out.println();
-
         // Create a priority Queue to store the cluster sizes. This is a max Heap
         PriorityQueue<Integer[]> clusterSizeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> y[1] - x[1]);
         for (int i = 0; i < clusterCount; i++)
@@ -713,7 +728,6 @@ public class ClusterGraph
         for (int i = 0; i < clusterCount; i++)
         {
             int currentCluster = clusterSizeAccess.poll()[0];
-            //System.out.println(currentCluster);
 
             for (int j = 0; j < clusters.get(currentCluster).size(); j++)
             {

@@ -1,0 +1,64 @@
+28 171 
+11 
+4 
+2 
+1 
+9 
+0 
+42 52 115 116 211 
+41 65 122 183 204 227 239 
+40 87 89 139 155 167 179 193 
+20 22 59 114 121 207 
+7 
+15 35 153 184 194 228 
+6 
+38 39 80 81 137 168 185 
+10 
+36 104 118 141 152 
+82 86 119 159 209 223 
+27 45 66 111 149 166 
+64 76 202 234 
+50 57 128 143 197 208 245 
+5 
+191 205 212 222 233 
+54 75 77 96 97 221 
+30 69 125 151 192 249 
+34 62 74 106 
+3 
+29 43 53 132 135 195 
+12 24 78 92 108 113 129 130 133 162 164 219 225 241 
+44 48 93 103 117 124 136 140 175 186 220 
+16 21 47 83 126 148 150 165 189 200 
+17 98 146 147 170 173 178 196 215 236 244 
+14 37 79 88 99 127 134 138 156 188 206 226 247 
+18 19 51 55 85 94 102 154 160 161 231 
+23 84 95 110 131 172 199 216 229 237 
+25 58 60 67 72 144 145 163 174 190 
+32 46 56 70 91 112 123 158 176 198 243 246 248 
+26 31 71 73 169 201 230 242 
+33 49 61 63 68 100 101 107 109 142 217 235 
+90 177 180 181 213 232 238 240 
+8 
+13 105 120 157 182 187 203 210 214 218 224 
+
+
+Success!
+Colors found by clusters l to s vertices linear is 42
+Success!
+Colors found by clusters s to l vertices linear is 41
+Success!
+Colors found by linear through clusters and vertices is 42
+Success!
+Colors found by linear is 43
+Success!
+Colors found by degree from largest to smallest is 41
+Success!
+Colors found by degree from smallest to largest is 46
+Success!
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 40
+Success!
+Colors found by Cluster Degree from smallest to largest, vertex degree from smallest to largest is 42
+Success!
+Colors found by Cluster Degree from largest to smallest, vertex degree from smallest to largest is 43
+Success!
+Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is 43
