@@ -7,10 +7,10 @@ import java.util.Collections;
 
 public class MinGraph implements Runnable
 {
-    private static Graph inputGraph;
+    public static Graph inputGraph;
     private static int vertexCount;
     private static int edgeCount;
-    private static int[] optimumVertexColors;
+    public static int[] optimumVertexColors;
 
     public static boolean colorTest(int[] colors, Graph g)
     {
@@ -25,30 +25,30 @@ public class MinGraph implements Runnable
     }
     
     // What does this do again? Why are we here? Just to suffer? T^T
-    public static int randomInt(int min, int max) 
+    public static int randomInt(int min, int max)
     {
         int range = (max - min) + 1;
-        return (int)(Math.random() * range) + min;  
+        return (int)(Math.random() * range) + min;
     }
     
-    static int countDistinct(int arr[], int n) 
-    { 
-        int res = 1; 
+    public static int countDistinct(int arr[], int n)
+    {
+        int res = 1;
   
-        // Pick all elements one by one 
-        for (int i = 1; i < n; i++)  
-        { 
-            int j = 0; 
+        // Pick all elements one by one
+        for (int i = 1; i < n; i++)
+        {
+            int j = 0;
             
-            for (j = 0; j < i; j++) 
-                if (arr[i] == arr[j]) 
-                    break; 
+            for (j = 0; j < i; j++)
+                if (arr[i] == arr[j])
+                    break;
 
-            // If not printed earlier,  
-            // then print it 
-            if (i == j) 
-                res++; 
-        } 
+            // If not printed earlier,
+            // then print it
+            if (i == j)
+                res++;
+        }
         
         return res;
     }
@@ -95,9 +95,9 @@ public class MinGraph implements Runnable
             {
                  if(nodeDegrees[j-1][1] > nodeDegrees[j][1])
                  {
-                      temp = nodeDegrees[j-1];  
-                      nodeDegrees[j-1] = nodeDegrees[j];  
-                      nodeDegrees[j] = temp;  
+                      temp = nodeDegrees[j-1];
+                      nodeDegrees[j-1] = nodeDegrees[j];
+                      nodeDegrees[j] = temp;
                  }
             }
         }   
@@ -134,10 +134,16 @@ public class MinGraph implements Runnable
         
         Thread weighted = new Thread(new MinGraph(), "Weighted");
         weighted.start();
+
+        /* -------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+        // kMeans
+
+        Thread kMeans = new Thread(new ClusterGraph(), "kMeans");
+        kMeans.start();
         
         /* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
         // Randomness
-    
+
         ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
         ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
     
@@ -187,8 +193,11 @@ public class MinGraph implements Runnable
         }
         
         /* ------------------------------------------------------------------------------------------------------------------------------------------------*/
-        
+        System.out.println("Random Done");
         weighted.join();
+        System.out.println("Weighted Done");
+        kMeans.join();
+        System.out.println("kMeans Done");
         
         if (colorTest(optimumVertexColors, inputGraph))
             System.out.println("Success!");
@@ -196,7 +205,7 @@ public class MinGraph implements Runnable
         System.out.println(countDistinct(optimumVertexColors, optimumVertexColors.length));
         
         for(int color: optimumVertexColors)
-            System.out.print(color + " ");                     
+            System.out.print(color + " ");
     }
 
     public void run()
@@ -207,7 +216,7 @@ public class MinGraph implements Runnable
         double totalWeight = 0;
         int[] vertexColors = new int[vertexCount];
         
-        // Store the nodes with their weights which are the degrees 
+        // Store the nodes with their weights which are the degrees
         for (int node = 0; node < vertexCount; node++)
         {
             storedWeights[node] = 0;
