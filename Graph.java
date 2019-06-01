@@ -78,6 +78,69 @@ public class Graph
         }
     }
 
+    //This constructor reads in an undirected graph from a String.
+    //Precondition:  The input is correctly formatted as follows.
+    //    The first line contains an integer n representing the number of
+    //    vertices in the graph.  Subsequent lines contain edges.
+    //    Vertices are numbered 0 through n - 1.
+    public Graph(String graphString)
+    {
+        Scanner input = new Scanner(graphString);
+        
+        //Read the number of vertices from the first line.
+        vertexCount = input.nextInt();
+        
+        //Skip the rest of the first line.  (Anything else is garbage.)
+        input.nextLine();
+        
+        //Allocate space for the adjacency list and matrix.
+        adjacencyMatrix = new boolean[vertexCount][vertexCount];
+        adjacencyList = new int[vertexCount][];
+        
+        //Allocate space for the degree array.
+        degreeArray = new int[vertexCount];
+
+        //Read in the remaining lines.
+        while(input.hasNextLine())
+        {
+            Scanner line = new Scanner(input.nextLine());
+            
+            //Get the first integer on the line.  This represents the u in each edge (u, v).
+            int u = line.nextInt();
+            
+            //Get the remaining integers on the line.  This represent each v in (u, v).
+            while(line.hasNextInt())
+            {
+                int v = line.nextInt();
+                
+                //We now have the edge (u, v).  Process accordingly.
+                
+                //If the edge hasn't already been read in somewhere else...
+                if(!adjacencyMatrix[u][v])
+                {
+                    degreeArray[u]++;
+                    degreeArray[v]++;
+                    adjacencyMatrix[u][v] = adjacencyMatrix[v][u] = true;
+                    edgeCount++;
+                }
+            }
+        }    
+
+        //We now have everything except the adjacency list.  Create that now.
+        for(int u = 0; u < vertexCount; u++)
+        {
+            adjacencyList[u] = new int[degreeArray[u]];
+           
+            int degreeCounter = 0;
+            
+            //March through row u of the adjacency matrix, inserting v into u's 
+            //adjacency list, if (u, v) is in the edge set.
+            for(int v = 0; v < vertexCount; v++)
+                if(adjacencyMatrix[u][v])
+                    adjacencyList[u][degreeCounter++] = v;
+        }
+    }
+
     //This constructor reads in an undirected graph from System.in.
     //Precondition:  The input is correctly formatted as follows.
     //    The first line contains an integer n representing the number of

@@ -52,7 +52,6 @@ public class ClusterGraph implements Runnable
             // Create the new Identification matrix using the recluster and assimilate algorithm.
             for (int i = 0; i < reclusterCap; i++)
             {
-                System.out.println(i + " " + reclusterCap);
                 try {newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount, initType, graph);}
                 catch (FileNotFoundException e)
                 {
@@ -352,32 +351,28 @@ public class ClusterGraph implements Runnable
                 hashTracker++;
             }
 
-            PrintWriter writer = new PrintWriter("graphStorage.txt");
-
-            // Print out the number of vertices in this cluster.
-            writer.println(groupsLists[i].length);
+            // Start with the number of vertices in this cluster.
+            String subString = groupsLists[i].length + "\n";
 
             // Iterate through each of the vertices in this cluster, putting their adjacency list along with them, all hashed as done before.
             for (int j = 0; j < groupsLists[i].length; j++)
             {
                 int currentVertex = (int)groupsLists[i].get(j);
                 // Subtract one because of the clever checking trick we implemented earlier.
-                writer.print(hashArray[currentVertex] - 1);
+                subString = subString + (hashArray[currentVertex] - 1);
                 
                 for (int k = 0; k < graph.adjacencyList[currentVertex].length; k++)
                 {
                     // Clever checking trick. If the vertex is not in this cluster it will not have a hash, aka a 0 hash. This makes it easy to check if it's in this array.
                     if (hashArray[graph.adjacencyList[currentVertex][k]] >= 1)
                     {
-                        writer.print(" " + (hashArray[graph.adjacencyList[currentVertex][k]] - 1));
+                        subString = subString + " " + (hashArray[graph.adjacencyList[currentVertex][k]] - 1);
                     }
                 }
-                writer.println();
+                subString = subString + "\n";
             }
-            writer.close();
 
-            File subFile = new File("graphStorage.txt");
-            subsetGraphs[i] = new Graph(subFile);
+            subsetGraphs[i] = new Graph(subString);
         }
 
         //Create a list to store each of the resultant idxs, for later assimilation
