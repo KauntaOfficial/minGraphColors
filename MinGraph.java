@@ -10,6 +10,7 @@ public class MinGraph implements Runnable
     private static Graph inputGraph;
     private static int vertexCount;
     private static int edgeCount;
+    private static int limitingColorCount;
     private static int[] optimumVertexColors;
 
     public static boolean colorTest(int[] colors, Graph g)
@@ -128,6 +129,7 @@ public class MinGraph implements Runnable
         }
         
         System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
+        limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
         
         /* -------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
         // Weighted Limiting Randomness
@@ -141,7 +143,6 @@ public class MinGraph implements Runnable
         ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
         ArrayList<Integer> storedNodes = new ArrayList<Integer>();
         ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
-        int limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
     
         //Add integers that correspond to the nodes of a graph to an arraylist.
         listOfVertices = new ArrayList<Integer>();
@@ -151,9 +152,7 @@ public class MinGraph implements Runnable
             listOfVertices.add(i);
         }
         
-        limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
-        
-        for(int timesToRun = 0; timesToRun < edgeCount/100; timesToRun++)
+        for(int timesToRun = 0; timesToRun < 10000; timesToRun++)
         {
             vertexColors = new int[vertexCount];
             storedNodes.clear();
@@ -254,7 +253,6 @@ public class MinGraph implements Runnable
         ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
         ArrayList<Integer> storedNodes = new ArrayList<Integer>();
         ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
-        int limitingColorCount = countDistinct(optimumVertexColors, optimumVertexColors.length) - 1;
         int[] storedWeights = new int[vertexCount];
         double totalWeight = 0;
         
@@ -271,7 +269,7 @@ public class MinGraph implements Runnable
         
         int[] temporaryStoredWeights = new int[vertexCount];
         
-        for(int timesToRun = 0; timesToRun < edgeCount/100; timesToRun++)
+        for(int timesToRun = 0; timesToRun < 10000; timesToRun++)
         {
             int[] vertexColors = new int[vertexCount];
             System.arraycopy(storedWeights, 0, temporaryStoredWeights, 0, storedWeights.length);
