@@ -193,11 +193,9 @@ public class MinGraph implements Runnable
         }
         
         /* ------------------------------------------------------------------------------------------------------------------------------------------------*/
-        System.out.println("Random Done");
+        
         weighted.join();
-        System.out.println("Weighted Done");
         kMeans.join();
-        System.out.println("kMeans Done");
         
         if (colorTest(optimumVertexColors, inputGraph))
             System.out.println("Success!");

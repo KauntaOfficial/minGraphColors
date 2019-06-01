@@ -29,11 +29,11 @@ public class ClusterGraph implements Runnable
         } 
     }
 
+    // Copy of doThings changed slightly to allow being run as a thread
     public void run()
     {
         for (int initType = 0; initType < 8; initType++)
         {
-            System.out.println("Run " + initType);
             KMeans colorGraph = new KMeans(MinGraph.inputGraph, initType);
             Graph graph = MinGraph.inputGraph;
 
@@ -98,7 +98,6 @@ public class ClusterGraph implements Runnable
             int[] clusterDegrees = getClusterDegrees(nonZeroClusterCount, graph, clusters, clusterSizes);
 
             ////// Run all of the potential orderings //////
-            System.out.println("Orderings...");
             // This gets the colors determined by clusters largest to smallest and vertices linear within.
             int[] clsilOrder = cLtoSiLinear(nonZeroClusterCount, graph, clusters, clusterSizes);
             int[] kColors = color(clsilOrder, graph);
