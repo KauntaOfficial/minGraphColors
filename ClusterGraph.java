@@ -259,14 +259,14 @@ public class ClusterGraph implements Runnable
             }
         }
 
-        for (int i = 0; i < clusters.size(); i++)
+        /*for (int i = 0; i < clusters.size(); i++)
         {
             for (int j = 0; j < clusters.get(i).size(); j++)
             {
                 System.out.print(clusters.get(i).get(j) + " ");
             }
             System.out.println();
-        } 
+        } */
         
         // Get the degrees of each of the clusters.
         int[] clusterDegrees = getClusterDegrees(nonZeroClusterCount, graph, clusters, clusterSizes);
@@ -332,6 +332,19 @@ public class ClusterGraph implements Runnable
         int[] cDegreeSLvDegreeLSColors = color(cDegreeSLvDegreeLS, graph);
         int cDegreeSLvDegreeLSCount = determineSuccessAndCountDistict(cDegreeSLvDegreeLSColors, graph, cDegreeSLvDegreeLSColors.length);
         System.out.println("Colors found by Cluster Degree from largest to smallest, vertex degree from largest to smallest is " + cDegreeSLvDegreeLSCount);
+
+        // All sorts of random shit im too tired to comment properly rn.
+        int[] random = randomWithinRandomWithout(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
+
+        /*for (int i = 0; i < random.length; i++)
+        {
+            System.out.print(random[i] + " ");
+        }
+        System.out.println(); */
+
+        int[] randomColors = color(random, graph);
+        int randomCount = determineSuccessAndCountDistict(randomColors, graph, randomColors.length);
+        System.out.println("Colors found by randoming is " + randomCount); 
     }
 
     public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount, int initType, Graph graph) throws FileNotFoundException
@@ -920,7 +933,7 @@ public class ClusterGraph implements Runnable
     {
         if (colorTest(colors, graph))
         {
-            System.out.println("Success!");
+            //System.out.println("Success!");
         }
 
         return countDistinct(colors, n);
@@ -1053,7 +1066,142 @@ public class ClusterGraph implements Runnable
         return degrees;
     }
 
-    // Brute forcing every combination where the clusters are gone through from largest degree to lowest degree.
+    public static int[] randomWithinRandomWithout(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes, int[] clusterDegrees)
+    {
+        int[] order = new int[graph.vertexCount];
+
+        int[][] bestSubOrders = new int[clusterCount][];
+        // Change this variable to change the amount of iterations that we go through random.
+        int power = 4;
+
+        // Get as close to the best ordering of each cluster as possible.
+        for (int i = 0; i < clusterCount; i++)
+        {
+            int[] currentOrder = new int[clusters.get(i).size()];
+
+            int iterLimit = (int)Math.pow(clusters.get(i).size(), 4);
+
+            //if (iterLimit > 10000)
+              //  iterLimit = 10000;
+            
+            
+            int[] bestOrder;
+            if (clusters.get(i).size() > 2)
+            {
+                bestOrder = bestOrderByRandom(graph, clusters.get(i), iterLimit);
+            }
+            else
+            {
+                bestOrder = new int[clusters.get(i).size()];
+
+                bestOrder[0] = clusters.get(i).get(0);
+
+                try
+                {
+                    bestOrder[1] = clusters.get(i).get(1);
+                }
+                catch (Exception e)
+                {
+                    // Do nothing
+                }
+            }
+
+            //System.out.println(clusters.get(i).get(0));
+            bestSubOrders[i] = new int[bestOrder.length];
+
+            System.arraycopy(bestOrder, 0, bestSubOrders[i], 0, bestOrder.length);
+        }
+
+        ArrayList<Integer> clusterOrder = new ArrayList<Integer>();
+        for (int i = 0; i < clusterOrder.size(); i++)
+        {
+            clusterOrder.add(i);
+        }
+
+        int cIterLimit = (int)Math.pow(clusterCount, power);
+
+        int minColors = graph.vertexCount;
+        int[] bestOrder = new int[graph.vertexCount];
+
+        for (int i = 0; i < cIterLimit; i++)
+        {
+            Collections.shuffle(clusterOrder);
+
+            int[] testOrder = new int[graph.vertexCount];
+
+            int location = 0;
+            for (int j = 0; j < bestSubOrders.length; j++)
+            {
+                System.arraycopy(bestSubOrders[j], 0, testOrder, location, bestSubOrders[j].length);
+                location += bestSubOrders[j].length;
+            }
+
+            int[] testColors = color(testOrder, graph);
+            int colorCount = determineSuccessAndCountDistict(testColors, graph, testColors.length);
+
+            if (colorCount < minColors)
+            {
+                minColors = colorCount;
+                System.arraycopy(testOrder, 0, bestOrder, 0, testOrder.length);
+            }
+        }
+
+
+
+        return bestOrder;
+    }
+
+    public static int[] bestOrderByRandom(Graph graph, ArrayList<Integer> toOrder, int iterLimit)
+    {
+        int minColors = toOrder.size();
+        int[] bestOrder = new int[toOrder.size()];
+
+        for (int i = 0; i < iterLimit; i++)
+        {
+            Collections.shuffle(toOrder);
+
+            int[] temp = new int[toOrder.size()];
+            for (int j = 0; j < toOrder.size(); j++)
+            {
+                temp[j] = toOrder.get(j);
+            }
+
+            int[] curColors = color(temp, graph);
+            int colorCount = determineSuccessAndCountDistict(curColors, graph, curColors.length);
+
+            if (colorCount < minColors)
+            {
+                minColors = colorCount;
+                System.arraycopy(temp, 0, bestOrder, 0, temp.length);
+            }
+        }
+        return bestOrder;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////// Anything past here can be deleted as it does not work ////////////////////////////
+
+
+/*
+
+    // Brute forcing every combination where the clusters are gone through from largest degree to lowest degree. - doesn't working - isn't being called.
     public static int[] bfClusterDegreeLS(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes, int[] clusterDegrees)
     {
         int[] order = new int[graph.vertexCount];
@@ -1131,8 +1279,8 @@ public class ClusterGraph implements Runnable
     }
 
     // These two statics are only used for these two methods - I couldn't think of any other way to do this
-    static int minColors;
-    static int[] minOrder;
+    //static int minColors;
+    //static int[] minOrder;
 
     public static int[] permuteSequenceReturnMinColorOrder(int[] str, Graph graph) 
     { 
@@ -1191,5 +1339,5 @@ public class ClusterGraph implements Runnable
                 permuteSequenceReturnMinColorOrder(newPrefix, newStr, graph);
             }
         }
-    }
+    } */
 }
