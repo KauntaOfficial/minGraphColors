@@ -136,7 +136,7 @@ public class MinGraph implements Runnable
         weighted.start();
         
         /* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-        // Randomness
+        // Pure Randomness
     
         ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
         ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
@@ -182,7 +182,7 @@ public class MinGraph implements Runnable
             {
                 //This array copy is good for large datasets.
                 System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
-                System.out.println("BetterL");
+                System.out.println("BetterP");
             }
         }
         
