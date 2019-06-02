@@ -138,10 +138,8 @@ public class MinGraph implements Runnable
         /* -------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
         // kMeans
 
-        Thread kMeans1 = new Thread(new ClusterGraph(), "kMeans1");
-        kMeans1.start();
-        Thread kMeans2 = new Thread(new ClusterGraph(), "kMeans2");
-        kMeans2.start();
+        Thread kMeans = new Thread(new ClusterGraph(), "kMeans");
+        kMeans.start();
         
         /* ----------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
         // Randomness
@@ -197,8 +195,7 @@ public class MinGraph implements Runnable
         /* ------------------------------------------------------------------------------------------------------------------------------------------------*/
         
         weighted.join();
-        kMeans1.join();
-        kMeans2.join();
+        kMeans.join();
         
         if (colorTest(optimumVertexColors, inputGraph))
             System.out.println("Success!");

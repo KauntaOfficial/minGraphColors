@@ -32,343 +32,169 @@ public class ClusterGraph implements Runnable
     // Copy of doThings changed slightly to allow being run as a thread
     public void run()
     {
-        if (Thread.currentThread().getName().equals("kMeans1"))
+        int initType = 7;
+        KMeans colorGraph = new KMeans(MinGraph.inputGraph, initType);
+        Graph graph = MinGraph.inputGraph;
+
+        DoubleMatrix idx = colorGraph.runkMeans();
+        int clusterCount = colorGraph.K;
+
+        int averageClusterSize = colorGraph.vertexCount / colorGraph.K;
+
+        // Duplicated idx for easy use since I want to save the original idx at least for now.
+        DoubleMatrix newIdx = idx.dup();
+        int reclusterCap = colorGraph.K / 2;
+        int newClusterCount = clusterCount;
+
+        // Continually recluster until all of the clusters are smaller than the average size, aka the square root of the amount of vertices.
+        
+        // Create the new Identification matrix using the recluster and assimilate algorithm.
+        for (int i = 0; i < reclusterCap; i++)
         {
-            for (int initType = 0; initType < 4; initType++)
+            try {newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount, initType, graph);}
+            catch (FileNotFoundException e)
             {
-                KMeans colorGraph = new KMeans(MinGraph.inputGraph, initType);
-                Graph graph = MinGraph.inputGraph;
+                System.exit(1);
+            }
+            newClusterCount = (int)newIdx.max() + 1;
+        }
 
-                DoubleMatrix idx = colorGraph.runkMeans();
-                int clusterCount = colorGraph.K;
+        DoubleMatrix[] idxLists = convertToGroupBasedLists(idx, clusterCount + 1);
+        DoubleMatrix[] newIdxLists = convertToGroupBasedLists(newIdx, newClusterCount + 1);
 
-                int averageClusterSize = colorGraph.vertexCount / colorGraph.K;
+        int nonZeroClusterCount = 0;
+        for (int i = 0; i < newIdxLists.length; i++)
+        {
+            if (newIdxLists[i].length > 0)
+                nonZeroClusterCount++;
+        }
 
-                // Duplicated idx for easy use since I want to save the original idx at least for now.
-                DoubleMatrix newIdx = idx.dup();
-                int reclusterCap = colorGraph.K / 2;
-                int newClusterCount = clusterCount;
+        ArrayList<ArrayList<Integer>> clusters = new ArrayList<ArrayList<Integer>>(clusterCount);
+        for (int i = 0; i < nonZeroClusterCount; i++)
+        {
+            clusters.add(new ArrayList<Integer>());
+        }
 
-                // Continually recluster until all of the clusters are smaller than the average size, aka the square root of the amount of vertices.
-                
-                // Create the new Identification matrix using the recluster and assimilate algorithm.
-                for (int i = 0; i < reclusterCap; i++)
-                {
-                    try {newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount, initType, graph);}
-                    catch (FileNotFoundException e)
-                    {
-                        System.exit(1);
-                    }
-                    newClusterCount = (int)newIdx.max() + 1;
-                }
+        int[] clusterSizes = new int[nonZeroClusterCount];
+        // Converts the new idx list into the arraylist we need for Coloring the graph.
+        int clusterTracker = 0;
+        for (int i = 0; i < newIdxLists.length; i++)
+        {
+            for (int j = 0; j < newIdxLists[i].length; j++)
+            {
+                int currentVertex = (int)newIdxLists[i].get(j);
+                clusters.get(clusterTracker).add(currentVertex);
+            }
+            if (newIdxLists[i].length > 0)
+            {
 
-                DoubleMatrix[] idxLists = convertToGroupBasedLists(idx, clusterCount + 1);
-                DoubleMatrix[] newIdxLists = convertToGroupBasedLists(newIdx, newClusterCount + 1);
-
-                int nonZeroClusterCount = 0;
-                for (int i = 0; i < newIdxLists.length; i++)
-                {
-                    if (newIdxLists[i].length > 0)
-                        nonZeroClusterCount++;
-                }
-
-                ArrayList<ArrayList<Integer>> clusters = new ArrayList<ArrayList<Integer>>(clusterCount);
-                for (int i = 0; i < nonZeroClusterCount; i++)
-                {
-                    clusters.add(new ArrayList<Integer>());
-                }
-
-                int[] clusterSizes = new int[nonZeroClusterCount];
-                // Converts the new idx list into the arraylist we need for Coloring the graph.
-                int clusterTracker = 0;
-                for (int i = 0; i < newIdxLists.length; i++)
-                {
-                    for (int j = 0; j < newIdxLists[i].length; j++)
-                    {
-                        int currentVertex = (int)newIdxLists[i].get(j);
-                        clusters.get(clusterTracker).add(currentVertex);
-                    }
-                    if (newIdxLists[i].length > 0)
-                    {
-
-                        clusterSizes[clusterTracker] = newIdxLists[i].length;
-                        clusterTracker++;
-                    }
-                }
-                
-                // Get the degrees of each of the clusters.
-                int[] clusterDegrees = getClusterDegrees(nonZeroClusterCount, graph, clusters, clusterSizes);
-
-                ////// Run all of the potential orderings //////
-                // This gets the colors determined by clusters largest to smallest and vertices linear within.
-                int[] clsilOrder = cLtoSiLinear(nonZeroClusterCount, graph, clusters, clusterSizes);
-                int[] kColors = color(clsilOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // This gets the colors determined by clusters smallest to largest and vertices linear within.
-                int[] cllisOrder = cStoLiLinear(nonZeroClusterCount, graph, clusters, clusterSizes);
-                kColors = color(cllisOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Purely linear order straight through the clusters in order, straight through the clusters in order.
-                int[] linearTcOrder = linearThroughClusters(nonZeroClusterCount, graph, clusters, clusterSizes);
-                kColors = color(linearTcOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // purely linear order from vertex 0 to n.
-                int[] linearOrder = pureLinear(graph);
-                kColors = color(linearOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Degree from largest to smallest.
-                int[] degreeLtoSOrder = degreeLtoS(graph);
-                kColors = color(degreeLtoSOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Degree from smallest to largest.
-                int[] degreeStoLOrder = degreeStoL(graph);
-                kColors = color(degreeStoLOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Cluster Degree from largest to smallest, vertex degree from largest to smallest
-                int[] cDegreeLSvDegreeLS = cDegreesLSvDegreesLS(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
-                kColors = color(cDegreeLSvDegreeLS, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Cluster Degree from smallest to largest, vertex degree from smallest to largest.
-                int[] cDegreeSLvDegreeSL = cDegreesSLvDegreesSL(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
-                kColors = color(cDegreeSLvDegreeSL, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Cluster Degree from largest to smallest, vertex degree from smallest to largest.
-                int[] cDegreeLSvDegreeSL = cDegreesLSvDegreesSL(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
-                kColors = color(cDegreeLSvDegreeSL, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Cluster Degree from smallest to largest, vertex degree from largest to smallest.
-                int[] cDegreeSLvDegreeLS = cDegreesSLvDegreesLS(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
-                kColors = color(cDegreeSLvDegreeLS, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
+                clusterSizes[clusterTracker] = newIdxLists[i].length;
+                clusterTracker++;
             }
         }
-        else
+        
+        // Get the degrees of each of the clusters.
+        int[] clusterDegrees = getClusterDegrees(nonZeroClusterCount, graph, clusters, clusterSizes);
+
+        ////// Run all of the potential orderings //////
+        // This gets the colors determined by clusters largest to smallest and vertices linear within.
+        int[] clsilOrder = cLtoSiLinear(nonZeroClusterCount, graph, clusters, clusterSizes);
+        int[] kColors = color(clsilOrder, graph);
+        if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
         {
-            for (int initType = 4; initType < 8; initType++)
-            {
-                KMeans colorGraph = new KMeans(MinGraph.inputGraph, initType);
-                Graph graph = MinGraph.inputGraph;
+            //This array copy is good for large datasets.
+            System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
+            System.out.println("BetterK");
+        }
 
-                DoubleMatrix idx = colorGraph.runkMeans();
-                int clusterCount = colorGraph.K;
+        // This gets the colors determined by clusters smallest to largest and vertices linear within.
+        int[] cllisOrder = cStoLiLinear(nonZeroClusterCount, graph, clusters, clusterSizes);
+        kColors = color(cllisOrder, graph);
+        if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
+        {
+            //This array copy is good for large datasets.
+            System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
+            System.out.println("BetterK");
+        }
 
-                int averageClusterSize = colorGraph.vertexCount / colorGraph.K;
+        // Purely linear order straight through the clusters in order, straight through the clusters in order.
+        int[] linearTcOrder = linearThroughClusters(nonZeroClusterCount, graph, clusters, clusterSizes);
+        kColors = color(linearTcOrder, graph);
+        if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
+        {
+            //This array copy is good for large datasets.
+            System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
+            System.out.println("BetterK");
+        }
 
-                // Duplicated idx for easy use since I want to save the original idx at least for now.
-                DoubleMatrix newIdx = idx.dup();
-                int reclusterCap = colorGraph.K / 2;
-                int newClusterCount = clusterCount;
+        // purely linear order from vertex 0 to n.
+        int[] linearOrder = pureLinear(graph);
+        kColors = color(linearOrder, graph);
+        if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
+        {
+            //This array copy is good for large datasets.
+            System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
+            System.out.println("BetterK");
+        }
 
-                // Continually recluster until all of the clusters are smaller than the average size, aka the square root of the amount of vertices.
-                
-                // Create the new Identification matrix using the recluster and assimilate algorithm.
-                for (int i = 0; i < reclusterCap; i++)
-                {
-                    try {newIdx = reclusterAndAssimilate(colorGraph, newIdx, averageClusterSize, newClusterCount, initType, graph);}
-                    catch (FileNotFoundException e)
-                    {
-                        System.exit(1);
-                    }
-                    newClusterCount = (int)newIdx.max() + 1;
-                }
+        // Degree from largest to smallest.
+        int[] degreeLtoSOrder = degreeLtoS(graph);
+        kColors = color(degreeLtoSOrder, graph);
+        if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
+        {
+            //This array copy is good for large datasets.
+            System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
+            System.out.println("BetterK");
+        }
 
-                DoubleMatrix[] idxLists = convertToGroupBasedLists(idx, clusterCount + 1);
-                DoubleMatrix[] newIdxLists = convertToGroupBasedLists(newIdx, newClusterCount + 1);
+        // Degree from smallest to largest.
+        int[] degreeStoLOrder = degreeStoL(graph);
+        kColors = color(degreeStoLOrder, graph);
+        if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
+        {
+            //This array copy is good for large datasets.
+            System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
+            System.out.println("BetterK");
+        }
 
-                int nonZeroClusterCount = 0;
-                for (int i = 0; i < newIdxLists.length; i++)
-                {
-                    if (newIdxLists[i].length > 0)
-                        nonZeroClusterCount++;
-                }
+        // Cluster Degree from largest to smallest, vertex degree from largest to smallest
+        int[] cDegreeLSvDegreeLS = cDegreesLSvDegreesLS(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
+        kColors = color(cDegreeLSvDegreeLS, graph);
+        if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
+        {
+            //This array copy is good for large datasets.
+            System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
+            System.out.println("BetterK");
+        }
 
-                ArrayList<ArrayList<Integer>> clusters = new ArrayList<ArrayList<Integer>>(clusterCount);
-                for (int i = 0; i < nonZeroClusterCount; i++)
-                {
-                    clusters.add(new ArrayList<Integer>());
-                }
+        // Cluster Degree from smallest to largest, vertex degree from smallest to largest.
+        int[] cDegreeSLvDegreeSL = cDegreesSLvDegreesSL(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
+        kColors = color(cDegreeSLvDegreeSL, graph);
+        if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
+        {
+            //This array copy is good for large datasets.
+            System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
+            System.out.println("BetterK");
+        }
 
-                int[] clusterSizes = new int[nonZeroClusterCount];
-                // Converts the new idx list into the arraylist we need for Coloring the graph.
-                int clusterTracker = 0;
-                for (int i = 0; i < newIdxLists.length; i++)
-                {
-                    for (int j = 0; j < newIdxLists[i].length; j++)
-                    {
-                        int currentVertex = (int)newIdxLists[i].get(j);
-                        clusters.get(clusterTracker).add(currentVertex);
-                    }
-                    if (newIdxLists[i].length > 0)
-                    {
+        // Cluster Degree from largest to smallest, vertex degree from smallest to largest.
+        int[] cDegreeLSvDegreeSL = cDegreesLSvDegreesSL(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
+        kColors = color(cDegreeLSvDegreeSL, graph);
+        if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
+        {
+            //This array copy is good for large datasets.
+            System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
+            System.out.println("BetterK");
+        }
 
-                        clusterSizes[clusterTracker] = newIdxLists[i].length;
-                        clusterTracker++;
-                    }
-                }
-                
-                // Get the degrees of each of the clusters.
-                int[] clusterDegrees = getClusterDegrees(nonZeroClusterCount, graph, clusters, clusterSizes);
-
-                ////// Run all of the potential orderings //////
-                // This gets the colors determined by clusters largest to smallest and vertices linear within.
-                int[] clsilOrder = cLtoSiLinear(nonZeroClusterCount, graph, clusters, clusterSizes);
-                int[] kColors = color(clsilOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // This gets the colors determined by clusters smallest to largest and vertices linear within.
-                int[] cllisOrder = cStoLiLinear(nonZeroClusterCount, graph, clusters, clusterSizes);
-                kColors = color(cllisOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Purely linear order straight through the clusters in order, straight through the clusters in order.
-                int[] linearTcOrder = linearThroughClusters(nonZeroClusterCount, graph, clusters, clusterSizes);
-                kColors = color(linearTcOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // purely linear order from vertex 0 to n.
-                int[] linearOrder = pureLinear(graph);
-                kColors = color(linearOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Degree from largest to smallest.
-                int[] degreeLtoSOrder = degreeLtoS(graph);
-                kColors = color(degreeLtoSOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Degree from smallest to largest.
-                int[] degreeStoLOrder = degreeStoL(graph);
-                kColors = color(degreeStoLOrder, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Cluster Degree from largest to smallest, vertex degree from largest to smallest
-                int[] cDegreeLSvDegreeLS = cDegreesLSvDegreesLS(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
-                kColors = color(cDegreeLSvDegreeLS, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Cluster Degree from smallest to largest, vertex degree from smallest to largest.
-                int[] cDegreeSLvDegreeSL = cDegreesSLvDegreesSL(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
-                kColors = color(cDegreeSLvDegreeSL, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Cluster Degree from largest to smallest, vertex degree from smallest to largest.
-                int[] cDegreeLSvDegreeSL = cDegreesLSvDegreesSL(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
-                kColors = color(cDegreeLSvDegreeSL, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-
-                // Cluster Degree from smallest to largest, vertex degree from largest to smallest.
-                int[] cDegreeSLvDegreeLS = cDegreesSLvDegreesLS(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
-                kColors = color(cDegreeSLvDegreeLS, graph);
-                if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
-                {
-                    //This array copy is good for large datasets.
-                    System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-                    System.out.println("BetterK");
-                }
-            }
+        // Cluster Degree from smallest to largest, vertex degree from largest to smallest.
+        int[] cDegreeSLvDegreeLS = cDegreesSLvDegreesLS(nonZeroClusterCount, graph, clusters, clusterSizes, clusterDegrees);
+        kColors = color(cDegreeSLvDegreeLS, graph);
+        if (countDistinct(kColors, kColors.length) < countDistinct(MinGraph.optimumVertexColors, MinGraph.optimumVertexColors.length))
+        {
+            //This array copy is good for large datasets.
+            System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
+            System.out.println("BetterK");
         }
     }
         
