@@ -130,10 +130,12 @@ public class MinGraph implements Runnable
         System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
         
         /* -------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-        // Weighted Randomness
+        // Other Pure Randomness
         
-        Thread weighted = new Thread(new MinGraph(), "Weighted");
-        weighted.start();
+        Thread pure1 = new Thread(new MinGraph());
+        pure1.start();
+        Thread pure2 = new Thread(new MinGraph());
+        pure2.start();
 
         /* -------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
         // kMeans
@@ -194,7 +196,8 @@ public class MinGraph implements Runnable
         
         /* ------------------------------------------------------------------------------------------------------------------------------------------------*/
         
-        weighted.join();
+        pure1.join();
+        pure2.join();
         kMeans.join();
         
         if (colorTest(optimumVertexColors, inputGraph))
@@ -210,55 +213,23 @@ public class MinGraph implements Runnable
     {
         ArrayList<Integer> adjacentVertexColors = new ArrayList<Integer>();
         ArrayList<Integer> listOfVertices = new ArrayList<Integer>();
-        int[] storedWeights = new int[vertexCount];
-        double totalWeight = 0;
         int[] vertexColors = new int[vertexCount];
         
-        // Store the nodes with their weights which are the degrees
-        for (int node = 0; node < vertexCount; node++)
+        //Add integers that correspond to the nodes of a graph to an arraylist.
+        listOfVertices = new ArrayList<Integer>();
+    
+        for (int i = 0; i < vertexCount; i++)
         {
-            storedWeights[node] = 0;
-            for (int adjacentNodes = 0; adjacentNodes < inputGraph.adjacencyList[node].length; adjacentNodes++)
-            {
-                storedWeights[node]++;
-            }
-            totalWeight += storedWeights[node];
+            listOfVertices.add(i);
         }
-        
-        int[] temporaryStoredWeights = new int[vertexCount];
         
         for(int timesToRun = 0; timesToRun < 10000; timesToRun++)
         {
             Arrays.fill(vertexColors, -1);
-            System.arraycopy(storedWeights, 0, temporaryStoredWeights, 0, storedWeights.length);
-            listOfVertices.clear();
-            double temporaryTotalWeight = totalWeight;
+            
+            Collections.shuffle(listOfVertices);
 
-            for (int i = 0 ; i < temporaryStoredWeights.length; i++)
-            {
-                int randomIndex = -1;
-                double random = Math.random() * temporaryTotalWeight;
-
-                for (int j = 0; j < temporaryStoredWeights.length; j++)
-                {
-                    if (temporaryStoredWeights[j] > -1)
-                    {
-                        random -= temporaryStoredWeights[j];
-                        if (random <= 0.0d)
-                        {
-                            temporaryTotalWeight -= temporaryStoredWeights[j];
-                            randomIndex = j;
-                            break;
-                        }
-                    }
-                }
-
-                listOfVertices.add(randomIndex);
-                    
-                //Remove the index once it has been used.
-                temporaryStoredWeights[randomIndex] = -1;
-            }
-                
+            //Go through every vertex randomly.
             for (int j = 0; j < vertexCount; j++)
             {
                 int selectedElement = listOfVertices.get(j);
@@ -285,7 +256,7 @@ public class MinGraph implements Runnable
             {
                 //This array copy is good for large datasets.
                 System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
-                System.out.println("BetterW");
+                System.out.println("BetterP");
             }
         }
     }
