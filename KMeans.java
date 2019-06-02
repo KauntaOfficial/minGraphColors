@@ -41,7 +41,7 @@ public class KMeans
         X = formDataMatrix(adjMatrix);
 
         // Get the initial centroids.
-        int power = 3;
+        int power = 1;
         CentroidInit initCentroids = new CentroidInit(inputGraph, K, X, initType, power);
         initialCentroids = initCentroids.centroids;
 
@@ -62,7 +62,7 @@ public class KMeans
 
         X = formDataMatrix(adjMatrix);
 
-        int power = 3;
+        int power = 1;
         CentroidInit initCentroids = new CentroidInit(inputGraph, K, X, initType, power);
         initialCentroids = initCentroids.centroids;
 
@@ -88,7 +88,7 @@ public class KMeans
         X = formDataMatrix(adjMatrix);
 
         // Get the initial centroids.
-        int power = 3;
+        int power = 1;
         CentroidInit initCentroids = new CentroidInit(inputGraph, K, X, initType, power);
         initialCentroids = initCentroids.centroids;
 
@@ -112,7 +112,7 @@ public class KMeans
         maxIters = vertexCount / 4;
 
         // Get the initial centroids.
-        int power = 3;
+        int power = 1;
         CentroidInit initCentroids = new CentroidInit(inputGraph, K, X, initType, power);
         initialCentroids = initCentroids.centroids;
 

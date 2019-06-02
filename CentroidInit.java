@@ -39,9 +39,11 @@ public class CentroidInit
                 centroids = lowestDegreeStart();
                 break;
             case 4:
+            // DO not use this for brute force.
                 centroids = weightedLowestDegreeStart();
                 break;
             case 5:
+            // DO not use this for brute force.
                 centroids = weightedHighestDegreeStart();
                 break;
             case 6:
