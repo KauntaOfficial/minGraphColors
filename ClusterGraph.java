@@ -908,13 +908,15 @@ public class ClusterGraph
         int[] order = new int[graph.vertexCount];
 
         int[][] bestSubOrders = new int[clusterCount][];
+        // Change this variable to change the amount of iterations that we go through random.
+        int power = 4;
 
         // Get as close to the best ordering of each cluster as possible.
         for (int i = 0; i < clusterCount; i++)
         {
             int[] currentOrder = new int[clusters.get(i).size()];
 
-            int iterLimit = (int)Math.pow(clusters.get(i).size(), 4);
+            int iterLimit = (int)Math.pow(clusters.get(i).size(), power);
 
             //if (iterLimit > 10000)
               //  iterLimit = 10000;
@@ -953,7 +955,7 @@ public class ClusterGraph
             clusterOrder.add(i);
         }
 
-        int cIterLimit = (int)Math.pow(clusterCount, 4);
+        int cIterLimit = (int)Math.pow(clusterCount, power);
 
         int minColors = graph.vertexCount;
         int[] bestOrder = new int[graph.vertexCount];
