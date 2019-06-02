@@ -190,7 +190,6 @@ public class MinGraph implements Runnable
             {
                 //This array copy is good for large datasets.
                 System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
-                System.out.println("BetterP");
             }
         }
         
@@ -200,10 +199,10 @@ public class MinGraph implements Runnable
         pure2.join();
         kMeans.join();
         
-        if (colorTest(optimumVertexColors, inputGraph))
-            System.out.println("Success!");
+        // if (colorTest(optimumVertexColors, inputGraph))
+        //     System.out.println("Success!");
             
-        System.out.println(countDistinct(optimumVertexColors, optimumVertexColors.length));
+        // System.out.println(countDistinct(optimumVertexColors, optimumVertexColors.length));
         
         for(int color: optimumVertexColors)
             System.out.print(color + " ");
@@ -256,7 +255,6 @@ public class MinGraph implements Runnable
             {
                 //This array copy is good for large datasets.
                 System.arraycopy(vertexColors, 0, optimumVertexColors, 0, vertexColors.length);
-                System.out.println("BetterP");
             }
         }
     }

@@ -104,7 +104,6 @@ public class ClusterGraph implements Runnable
         {
             //This array copy is good for large datasets.
             System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-            System.out.println("BetterK");
         }
 
         // This gets the colors determined by clusters smallest to largest and vertices linear within.
@@ -114,7 +113,6 @@ public class ClusterGraph implements Runnable
         {
             //This array copy is good for large datasets.
             System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-            System.out.println("BetterK");
         }
 
         // Purely linear order straight through the clusters in order, straight through the clusters in order.
@@ -124,7 +122,6 @@ public class ClusterGraph implements Runnable
         {
             //This array copy is good for large datasets.
             System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-            System.out.println("BetterK");
         }
 
         // purely linear order from vertex 0 to n.
@@ -134,7 +131,6 @@ public class ClusterGraph implements Runnable
         {
             //This array copy is good for large datasets.
             System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-            System.out.println("BetterK");
         }
 
         // Degree from largest to smallest.
@@ -144,7 +140,6 @@ public class ClusterGraph implements Runnable
         {
             //This array copy is good for large datasets.
             System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-            System.out.println("BetterK");
         }
 
         // Degree from smallest to largest.
@@ -154,7 +149,6 @@ public class ClusterGraph implements Runnable
         {
             //This array copy is good for large datasets.
             System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-            System.out.println("BetterK");
         }
 
         // Cluster Degree from largest to smallest, vertex degree from largest to smallest
@@ -164,7 +158,6 @@ public class ClusterGraph implements Runnable
         {
             //This array copy is good for large datasets.
             System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-            System.out.println("BetterK");
         }
 
         // Cluster Degree from smallest to largest, vertex degree from smallest to largest.
@@ -174,7 +167,6 @@ public class ClusterGraph implements Runnable
         {
             //This array copy is good for large datasets.
             System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-            System.out.println("BetterK");
         }
 
         // Cluster Degree from largest to smallest, vertex degree from smallest to largest.
@@ -184,7 +176,6 @@ public class ClusterGraph implements Runnable
         {
             //This array copy is good for large datasets.
             System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-            System.out.println("BetterK");
         }
 
         // Cluster Degree from smallest to largest, vertex degree from largest to smallest.
@@ -194,7 +185,6 @@ public class ClusterGraph implements Runnable
         {
             //This array copy is good for large datasets.
             System.arraycopy(kColors, 0, MinGraph.optimumVertexColors, 0, kColors.length);
-            System.out.println("BetterK");
         }
     }
         
@@ -1118,7 +1108,7 @@ public class ClusterGraph implements Runnable
             clusterOrder.add(i);
         }
 
-        int cIterLimit = (int)Math.pow(clusterCount, power);
+        int cIterLimit = (int)Math.pow(clusterCount, power - 1);
 
         int minColors = graph.vertexCount;
         int[] bestOrder = new int[graph.vertexCount];
