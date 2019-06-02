@@ -8,9 +8,6 @@ import java.util.*;
 import javax.lang.model.util.ElementScanner6;
 import java.io.*;
 
-// Need to make sure that the jblas package is installed.
-// Compile with statement javac -cp '.:jblas-1.2.4.jar' ClusterGraph.java
-// Run with statement java -cp '.:jblas-1.2.4.jar' ClusterGraph file.txt
 
 public class ClusterGraph implements Runnable
 {
@@ -18,15 +15,18 @@ public class ClusterGraph implements Runnable
     {
         String file = args[0];
         File fFile = new File(file);
+        int initType = 7;
         int initLimit = 8;
 
-        for (int i = 0; i < initLimit; i++)
+        /*for (int i = 0; i < initLimit; i++)
         {
             doThings(file, fFile, i);
             System.out.println(" ----- " + i + " -----");
             System.out.println("---------------------------------------------------------------------------------------------");
             System.out.println();
-        } 
+        } */
+
+        doThings(file, fFile, initType);
     }
 
     // Copy of doThings changed slightly to allow being run as a thread
@@ -208,10 +208,12 @@ public class ClusterGraph implements Runnable
         int clusterCount = colorGraph.K;
 
         int averageClusterSize = colorGraph.vertexCount / colorGraph.K;
+        // test value to see how it affects things
+        averageClusterSize = 8;
 
         // Duplicated idx for easy use since I want to save the original idx at least for now.
         DoubleMatrix newIdx = idx.dup();
-        int reclusterCap = colorGraph.K / 2;
+        int reclusterCap = colorGraph.K;
         int newClusterCount = clusterCount;
 
         // Continually recluster until all of the clusters are smaller than the average size, aka the square root of the amount of vertices.
@@ -256,6 +258,15 @@ public class ClusterGraph implements Runnable
                 clusterTracker++;
             }
         }
+
+        for (int i = 0; i < clusters.size(); i++)
+        {
+            for (int j = 0; j < clusters.get(i).size(); j++)
+            {
+                System.out.print(clusters.get(i).get(j) + " ");
+            }
+            System.out.println();
+        } 
         
         // Get the degrees of each of the clusters.
         int[] clusterDegrees = getClusterDegrees(nonZeroClusterCount, graph, clusters, clusterSizes);
@@ -326,7 +337,7 @@ public class ClusterGraph implements Runnable
     public static DoubleMatrix reclusterAndAssimilate(KMeans colorGraph, DoubleMatrix idx, int averageClusterSize, int clusterCount, int initType, Graph graph) throws FileNotFoundException
     {
         
-        DoubleMatrix greaterThanAverage = clustersGreaterThanAverage(clusterCount, idx.length, idx);
+        DoubleMatrix greaterThanAverage = clustersGreaterThanAverage(clusterCount, idx.length, idx, averageClusterSize);
 
         int greaterThanAverageCount = (int)greaterThanAverage.sum();
 
@@ -523,10 +534,9 @@ public class ClusterGraph implements Runnable
         return false;
     }
 
-    public static DoubleMatrix clustersGreaterThanAverage(int K, int vertexCount, DoubleMatrix idx)
+    public static DoubleMatrix clustersGreaterThanAverage(int K, int vertexCount, DoubleMatrix idx, int averageValue)
     {
         DoubleMatrix counts = countClusters(K, idx);
-        int averageValue = vertexCount / K;
 
         DoubleMatrix greaterThan = DoubleMatrix.zeros(K);
         for (int i = 0; i < counts.length; i++)
@@ -919,7 +929,10 @@ public class ClusterGraph implements Runnable
     public static int[] color(int[] order, Graph graph)
     {
         // Colors start at 1, a color of 0 means that no color has been assigned yet.
-        int[] colors = new int[order.length];
+
+        // Really hacky way of doing this - with the final orderings, this will result in no 0s, but on the
+        // cluster colorings, there will be a lot of 0s, so I subtract one from the unique colors found for those.
+        int[] colors = new int[graph.vertexCount];
         int colorsUsed = 0;
 
         for (int i = 0; i < order.length; i++)
@@ -932,6 +945,8 @@ public class ClusterGraph implements Runnable
             // A node can never have a color of 0, so this is in place to prevent that.
             adjColors[0] = true;
             // Place a true in the index of a color that is used by all adjacent vertices.
+            // This try catch should fix the issue of indices that don't exist within this cluster.
+            
             for (int j = 0; j < graph.adjacencyList[currentVertex].length; j++)
             {
                 adjColors[colors[graph.adjacencyList[currentVertex][j]]] = true;
@@ -951,10 +966,21 @@ public class ClusterGraph implements Runnable
             }
 
             // Set the color of the current vertex to that of the first usable color.
+            // This is the new issue line - 
             colors[currentVertex] = usableColor;
         }
 
         return colors;
+    }
+
+    public static int[] colorCluster(int[] order, Graph graph)
+    {
+        int[] colors = new int [order.length];
+        int colorsUsed  = 0;
+
+
+
+        return new int[1];
     }
 
     public static boolean colorTest(int[] colors, Graph g)
@@ -1025,5 +1051,145 @@ public class ClusterGraph implements Runnable
         }
 
         return degrees;
+    }
+
+    // Brute forcing every combination where the clusters are gone through from largest degree to lowest degree.
+    public static int[] bfClusterDegreeLS(int clusterCount, Graph graph, ArrayList<ArrayList<Integer>> clusters, int[] clusterSizes, int[] clusterDegrees)
+    {
+        int[] order = new int[graph.vertexCount];
+        
+        PriorityQueue<Integer[]> clusterDegreeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> y[1] - x[1]);
+        for (int i = 0; i < clusterDegrees.length; i++)
+        {
+            Integer[] toOffer = new Integer[2];
+            toOffer[0] = i;
+            toOffer[1] = clusterDegrees[i];
+            System.out.println(toOffer[1]);
+            clusterDegreeAccess.offer(toOffer);
+        }
+
+        int[][] bestSubOrders = new int[clusterCount][];
+
+        for (int i = 0; i < clusterCount; i++)
+        {
+            int[] currentOrder = new int[clusters.get(i).size()];
+
+            for (int j = 0; j < currentOrder.length; j++)
+            {
+                currentOrder[j] = clusters.get(i).get(j);
+                System.out.print(currentOrder[j] + " ");
+            }
+            System.out.println();
+
+            if (clusterSizes[i] < 8)
+            {
+                bestSubOrders[i] = permuteSequenceReturnMinColorOrder(currentOrder, graph);
+            }
+            else
+            {
+                int[] suborder = new int[clusters.get(i).size()];
+
+                PriorityQueue<Integer[]> degreeAccess = new PriorityQueue<Integer[]>((Integer[] x, Integer[] y) -> y[1] - x[1]);
+                for (int j = 0; j < clusters.get(i).size(); j++)
+                {
+                    Integer[] toOffer = new Integer[2];
+                    toOffer[0] = clusters.get(i).get(j);
+                    toOffer[1] = graph.degreeArray[clusters.get(i).get(j)];
+                    degreeAccess.offer(toOffer);
+                }
+
+                for (int j = 0; j < graph.vertexCount; j++)
+                {
+                    int currentVertex = degreeAccess.poll()[0];
+                    suborder[j] = currentVertex;
+                }
+
+                bestSubOrders[i] = suborder.clone();
+            }
+
+        }
+
+
+        int orderTracker = 0;
+        for (int i = 0; i < clusterDegreeAccess.size(); i++)
+        {
+            int currentCluster = clusterDegreeAccess.poll()[0];
+
+            for (int j = 0; j < bestSubOrders[currentCluster].length; j++)
+            {
+                order[orderTracker] = bestSubOrders[currentCluster][j];
+                orderTracker++;
+            }
+        }
+
+        for (int i = 0; i < order.length; i++)
+        {
+            System.out.print(order[i] + " ");
+        }
+        System.out.println(); 
+        return order;
+    }
+
+    // These two statics are only used for these two methods - I couldn't think of any other way to do this
+    static int minColors;
+    static int[] minOrder;
+
+    public static int[] permuteSequenceReturnMinColorOrder(int[] str, Graph graph) 
+    { 
+        minColors = str.length;
+        minOrder = new int[str.length];
+        permuteSequenceReturnMinColorOrder(new int[0], str, graph); 
+        return minOrder;
+    }
+
+    // Goes through all permutations of the given array, testing how many colors they take, and comparing it to previous colorings.
+    private static void permuteSequenceReturnMinColorOrder(int[] prefix, int[] str, Graph graph) 
+    {
+        int n = str.length;
+        if (n == 0) 
+        {
+            int[] colors = color(prefix, graph);
+
+            // Kinda have to trust that the coloring works here, since all of the 0s will make it not return success.
+            int count = determineSuccessAndCountDistict(colors, graph, colors.length) - 1;
+            
+            if (count < minColors)
+            {
+                minColors = count;
+                minOrder = prefix.clone();
+                
+                for (int i = 0; i < minOrder.length; i++)
+                {
+                    System.out.print(minOrder[i] + " ");
+                }
+                System.out.println(); 
+            }
+        }
+        else 
+        {
+            for (int i = 0; i < n; i++)
+            {
+                int[] newPrefix = new int[prefix.length + 1];
+                for (int j = 0; j < prefix.length; j++)
+                {
+                    newPrefix[j] = prefix[j];
+                }
+                newPrefix[prefix.length] = str[i];
+
+                int[] newStr = new int[str.length - 1];
+                for (int j = 0; j < str.length; j++)
+                {
+                    if (j < i)
+                    {
+                        newStr[j] = str[j];
+                    }
+                    else if (j > i)
+                    {
+                        newStr[j-1] = str[j];
+                    }
+                }
+                permuteSequenceReturnMinColorOrder(newPrefix, newStr, graph);
+            }
+        }
     }
 }
