@@ -1,5 +1,5 @@
-// Joseph Seaton, Ivy Zhang, Neo Zhou, and Ben Chappell.
-
+// Joseph Seaton, Ivy Zhang, Neo Zhou, and Ben Chappell(aka wikipedia)
+// Worse than team 1  
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.lang.Math;
@@ -21,6 +21,7 @@ public class MinGraph
     
     // What does this do again? Why are we here? Just to suffer? T^T
     public static int randomInt(int min, int max) 
+        
     {
         int range = (max - min) + 1;
         return (int)(Math.random() * range) + min;  
@@ -53,7 +54,7 @@ public class MinGraph
         int[] vertexColors = new int[vc];
         Arrays.fill(vertexColors, -1);
         
-        for (int i = 0; i < colorOrdering.size(); i++) 
+        for (int i = 0; i < colorOrdering.size(); i++) gbhh
         {
             int selectedElement = colorOrdering.get(i);
 
@@ -77,7 +78,21 @@ public class MinGraph
         
         return vertexColors;
     }
-       
+    
+    // Return all combinations for the nodes provided
+    public static ArrayList<ArrayList<Integer>> allCombinations(ArrayList<> degreeArray)
+    {
+        ArrayList<ArrayList<>> subsets = new ArrayList<>();
+        int k = degreeArray.size();
+        int[] s = new int[k];
+        
+        for (int i = 0; (s[i] = i) < k - 1; i++)
+        {
+            subsets.add(degreeArray.subList(
+        }
+        
+    }
+    
     public static void main(String[] args) throws CloneNotSupportedException
     {
         //Create a new graph to manipulate.
@@ -144,21 +159,8 @@ public class MinGraph
             nodesStoredByDegrees.get(currentIndex).add(nodeDegrees[i][0]);
         }   
         
-        // randomly shuffle the groups to make new orderings multiple times
-        for (int timesToRun = 0; timesToRun < 10; timesToRun++)
-        {
-            ArrayList<Integer> runOrdering = new ArrayList<Integer>();
-            for (int i = 0; i < nodesStoredByDegrees.size(); i++)
-            {    
-                Collections.shuffle(nodesStoredByDegrees.get(i));
-                runOrdering.addAll(nodesStoredByDegrees.get(i));
-            }
-            int[] runVertexColors = colorGraph(runOrdering, vertexCount, inputGraph);
-            if (timesToRun == 0 || countDistinct(runVertexColors, runVertexColors.length) < countDistinct(optimumVertexColors, optimumVertexColors.length))
-            {
-                System.arraycopy(runVertexColors, 0, optimumVertexColors, 0, runVertexColors.length);
-            }
-        }
+        // Get every combination for every degree
+        
         
         if (colorTest(optimumVertexColors, inputGraph))
             System.out.println("Success!");
